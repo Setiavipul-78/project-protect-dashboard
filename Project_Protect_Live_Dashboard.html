@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Project Protect — Live Dashboard</title>
+<style>
+  :root {
+    --blue:      #4736FE;
+    --mint:      #00C896;
+    --bg:        #0D0D14;
+    --surface:   #16161F;
+    --border:    #2A2A3A;
+    --text:      #F0F0F6;
+    --muted:     #8888A8;
+    --amber:     #F5A623;
+    --red:       #FF4D4D;
+    --font:      'Geist', 'Inter', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* ── Header ── */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 32px; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--blue); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #fff; letter-spacing: -0.5px;
+  }
+  .logo-text { font-size: 17px; font-weight: 600; }
+  .logo-sub  { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  .status-badge {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    border: 1px solid;
+  }
+  .status-badge.live   { background: #00C89614; border-color: var(--mint); color: var(--mint); }
+  .status-badge.stale  { background: #F5A62314; border-color: var(--amber); color: var(--amber); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .dot.pulse { animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+  /* ── Summary cards ── */
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px; padding: 28px 32px 0;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--blue);
+  }
+  .card.done::after  { background: var(--mint); }
+  .card.blocked::after { background: var(--red); }
+  .card.warn::after  { background: var(--amber); }
+  .card-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+  .card-value { font-size: 36px; font-weight: 700; margin-top: 6px; line-height: 1; }
+  .card-sub   { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Progress bar ── */
+  .progress-section { padding: 28px 32px 0; }
+  .progress-section h2 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
+  .progress-bar {
+    height: 10px; border-radius: 6px; background: var(--border);
+    overflow: hidden; position: relative;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 6px;
+    background: linear-gradient(90deg, var(--blue), var(--mint));
+    transition: width .8s ease;
+  }
+  .progress-label { font-size: 13px; color: var(--muted); margin-top: 6px; text-align: right; }
+
+  /* ── Table ── */
+  .table-section { padding: 28px 32px 40px; }
+  .table-section h2 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 14px; }
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: #1C1C2A; }
+  th {
+    padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 600;
+    color: var(--muted); text-transform: uppercase; letter-spacing: .7px;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #1A1A26; }
+
+  .pill {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+  }
+  .pill-done       { background: #00C89620; color: var(--mint); }
+  .pill-blocked    { background: #FF4D4D20; color: var(--red); }
+  .pill-inprogress { background: #4736FE20; color: #847CFE; }
+  .pill-pending    { background: #F5A62320; color: var(--amber); }
+  .pill-default    { background: var(--border); color: var(--muted); }
+
+  /* ── Filter bar ── */
+  .filter-bar {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    padding: 0 32px 18px;
+  }
+  .filter-btn {
+    padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    cursor: pointer; transition: all .15s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--blue); border-color: var(--blue); color: #fff;
+  }
+  input.search {
+    padding: 5px 14px; border-radius: 20px; font-size: 12px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    min-width: 180px; outline: none;
+  }
+  input.search:focus { border-color: var(--blue); }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center; padding: 16px; font-size: 11px; color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Loading / error ── */
+  .msg { text-align: center; padding: 60px 32px; color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 600px) {
+    header { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .cards { padding: 20px 16px 0; }
+    .filter-bar, .table-section, .progress-section { padding-left: 16px; padding-right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── CONFIG — paste your published CSV URL below ── -->
+<script>
+const CONFIG = {
+  SHEET_CSV_URL:   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRP1tl1cl_L4taXPDxHppqUWYd5Iyt8qW9P_sYx7Pzp7dOeOEym0_M7KIVnt4Lomf4OGIIQIWwMCpcn/pub?gid=878300741&single=true&output=csv",
+  REFRESH_SECONDS: 300,
+};
+</script>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">PP</div>
+    <div>
+      <div class="logo-text">Project Protect</div>
+      <div class="logo-sub">Road Safety Signs · Cars24</div>
+    </div>
+  </div>
+  <div id="statusBadge" class="status-badge stale">
+    <span class="dot"></span>
+    <span id="statusText">Connecting…</span>
+  </div>
+</header>
+
+<div id="cards" class="cards"></div>
+<div class="progress-section">
+  <h2>Overall Completion</h2>
+  <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width:0%"></div></div>
+  <div id="progressLabel" class="progress-label">—</div>
+</div>
+
+<div class="filter-bar" style="padding-top:20px">
+  <input id="searchBox" class="search" type="text" placeholder="Search location…" oninput="renderTable()">
+  <button class="filter-btn active" data-phase="All" onclick="setPhase(this)">All</button>
+  <button class="filter-btn" data-phase="Done" onclick="setPhase(this)">Done</button>
+  <button class="filter-btn" data-phase="Installation" onclick="setPhase(this)">Installation</button>
+  <button class="filter-btn" data-phase="Procurement" onclick="setPhase(this)">Procurement</button>
+  <button class="filter-btn" data-phase="Blocked" onclick="setPhase(this)">Blocked</button>
+</div>
+
+<div class="table-section">
+  <h2 id="tableHeading">All Locations</h2>
+  <div class="table-wrap"><div id="tableContainer" class="msg">Loading data…</div></div>
+</div>
+
+<footer id="footer">Last refreshed: —</footer>
+
+<script>
+// ── State ──────────────────────────────────────────────────
+let allRows    = [];
+let headers    = [];
+let activePhase = 'All';
+
+// ── Bootstrap ─────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (!CONFIG.SHEET_CSV_URL) {
+    setStatus(false);
+    document.getElementById('tableContainer').innerHTML =
+      '<p class="msg">⚠️ No data source configured. Open this file and set <code>CONFIG.SHEET_CSV_URL</code>.</p>';
+    return;
+  }
+  loadData();
+  setInterval(loadData, CONFIG.REFRESH_SECONDS * 1000);
+});
+
+// ── Data loading ──────────────────────────────────────────
+async function loadData() {
+  try {
+    const url  = CONFIG.SHEET_CSV_URL + '&cb=' + Date.now(); // cache-bust
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    parseCSV(text);
+    setStatus(true);
+    document.getElementById('footer').textContent =
+      'Last refreshed: ' + new Date().toLocaleTimeString();
+  } catch (e) {
+    console.error(e);
+    setStatus(false);
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n').map(l =>
+    l.split(',').map(c => c.trim().replace(/^"|"$/g, ''))
+  );
+  if (lines.length < 2) return;
+  headers = lines[0];
+  allRows = lines.slice(1).filter(r => r.some(c => c));
+  renderCards();
+  renderTable();
+}
+
+// ── Cards ─────────────────────────────────────────────────
+function renderCards() {
+  const statusIdx = colIdx('status');
+  const phaseIdx  = colIdx('phase');
+
+  const counts = {};
+  let done = 0, blocked = 0, total = allRows.length;
+  allRows.forEach(r => {
+    const phase = (phaseIdx >= 0 ? r[phaseIdx] : (statusIdx >= 0 ? r[statusIdx] : '')) || 'Unknown';
+    counts[phase] = (counts[phase] || 0) + 1;
+    if (/done|complete/i.test(phase)) done++;
+    if (/block/i.test(phase)) blocked++;
+  });
+
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} of ${total} locations completed (${pct}%)`;
+
+  const inProgress = total - done - blocked;
+  document.getElementById('cards').innerHTML = `
+    <div class="card"><div class="card-label">Total Locations</div><div class="card-value">${total}</div><div class="card-sub">across all channels</div></div>
+    <div class="card done"><div class="card-label">Done</div><div class="card-value">${done}</div><div class="card-sub">${pct}% complete</div></div>
+    <div class="card"><div class="card-label">In Progress</div><div class="card-value">${inProgress}</div><div class="card-sub">active right now</div></div>
+    <div class="card blocked"><div class="card-label">Blocked</div><div class="card-value">${blocked}</div><div class="card-sub">need attention</div></div>
+  `;
+}
+
+// ── Table ─────────────────────────────────────────────────
+function renderTable() {
+  const search    = document.getElementById('searchBox').value.toLowerCase();
+  const statusIdx = colIdx('status');
+  const phaseIdx  = colIdx('phase');
+
+  let rows = allRows.filter(r => {
+    const matchSearch = !search || r.some(c => c.toLowerCase().includes(search));
+    const phaseVal    = (phaseIdx >= 0 ? r[phaseIdx] : (statusIdx >= 0 ? r[statusIdx] : '')) || '';
+    const matchPhase  = activePhase === 'All' || phaseVal.toLowerCase().includes(activePhase.toLowerCase());
+    return matchSearch && matchPhase;
+  });
+
+  document.getElementById('tableHeading').textContent =
+    activePhase === 'All' ? `All Locations (${rows.length})` : `${activePhase} (${rows.length})`;
+
+  if (!rows.length) {
+    document.getElementById('tableContainer').innerHTML = '<p class="msg">No matching locations.</p>';
+    return;
+  }
+
+  const ths = headers.map(h => `<th>${h}</th>`).join('');
+  const trs = rows.map(r =>
+    '<tr>' + r.map((c, i) => `<td>${formatCell(c, headers[i])}</td>`).join('') + '</tr>'
+  ).join('');
+
+  document.getElementById('tableContainer').innerHTML = `
+    <table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+}
+
+function formatCell(val, header) {
+  if (!val) return '<span style="color:var(--muted)">—</span>';
+  const h = (header || '').toLowerCase();
+  if (h.includes('status') || h.includes('phase')) return pillify(val);
+  if (h.includes('date') || h.includes('update')) {
+    const d = new Date(val);
+    return isNaN(d) ? val : d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  }
+  return escHtml(val);
+}
+
+function pillify(val) {
+  const v = val.toLowerCase();
+  let cls = 'pill-default';
+  if (/done|complete|finished/.test(v))  cls = 'pill-done';
+  else if (/block|hold|paused/.test(v))   cls = 'pill-blocked';
+  else if (/install|procur|planning|survey|test/.test(v)) cls = 'pill-inprogress';
+  else if (/pending|not start/.test(v))   cls = 'pill-pending';
+  return `<span class="pill ${cls}">${escHtml(val)}</span>`;
+}
+
+// ── Utilities ─────────────────────────────────────────────
+function colIdx(keyword) {
+  return headers.findIndex(h => String(h).toLowerCase().includes(keyword));
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function setPhase(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activePhase = btn.dataset.phase;
+  renderTable();
+}
+function setStatus(isLive) {
+  const badge = document.getElementById('statusBadge');
+  const dot   = badge.querySelector('.dot');
+  badge.className = 'status-badge ' + (isLive ? 'live' : 'stale');
+  dot.className   = 'dot' + (isLive ? ' pulse' : '');
+  document.getElementById('statusText').textContent = isLive ? 'Live' : 'Snapshot';
+}
+</script>
+</body>
+</html>
