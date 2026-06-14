@@ -3,320 +3,650 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Project Protect — Live Dashboard</title>
+<title>Cars24 · Project Protect — Challan + Road Safety Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 <style>
-  :root {
-    --blue:      #4736FE;
-    --mint:      #00C896;
-    --bg:        #0D0D14;
-    --surface:   #16161F;
-    --border:    #2A2A3A;
-    --text:      #F0F0F6;
-    --muted:     #8888A8;
-    --amber:     #F5A623;
-    --red:       #FF4D4D;
-    --font:      'Geist', 'Inter', system-ui, sans-serif;
+  :root{
+    --blue:#4736FE; --blued:#2B2098; --mint:#63FFB1; --orange:#FF4F01;
+    --bluel:#E3E1FF; --ink:#020618; --muted:#6B6B86; --line:#ECECF4;
+    --bg:#F6F6FC; --card:#fff; --amber:#F59E0B;
+    --radius:18px; --shadow:0 1px 3px rgba(20,20,60,.05);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Geist',system-ui,-apple-system,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
 
-  /* ── Header ── */
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 32px; border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
-  .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-mark {
-    width: 36px; height: 36px; border-radius: 8px;
-    background: var(--blue); display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 14px; color: #fff; letter-spacing: -0.5px;
-  }
-  .logo-text { font-size: 17px; font-weight: 600; }
-  .logo-sub  { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  /* ---------- NAV ---------- */
+  nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;padding:11px 26px;
+    background:rgba(255,255,255,.78);-webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:11px;flex:0 0 auto}
+  .logo{width:34px;height:34px;border-radius:50%;background:var(--blue);display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;box-shadow:0 2px 8px rgba(71,54,254,.35)}
+  .wordmark{font-weight:800;font-size:17px;letter-spacing:-.02em;line-height:1.05}
+  .wordmark span{color:var(--blue)}
+  .wordmark small{display:block;font-size:10.5px;font-weight:600;color:var(--muted);letter-spacing:.04em}
+  .tabs{flex:1 1 auto;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:#fff;color:var(--muted);font-family:inherit;font-weight:600;font-size:13.5px;padding:9px 18px;border-radius:999px;cursor:pointer;transition:.18s}
+  .tab:hover{color:var(--ink);border-color:var(--bluel)}
+  .tab.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 4px 12px rgba(71,54,254,.28)}
+  .navright{flex:0 0 auto;display:flex;align-items:center;gap:14px}
+  .refresh{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;color:var(--ink);font-family:inherit;font-weight:600;font-size:13px;padding:8px 14px;border-radius:999px;cursor:pointer;transition:.18s}
+  .refresh:hover{border-color:var(--blue);color:var(--blue)}
+  .refresh svg{width:14px;height:14px}
+  .status{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.15)}
+  .dot.live{background:#15A66A;box-shadow:0 0 0 4px rgba(21,166,106,.15);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(21,166,106,.35)}70%{box-shadow:0 0 0 7px rgba(21,166,106,0)}100%{box-shadow:0 0 0 0 rgba(21,166,106,0)}}
+  .synced{font-size:11px;color:var(--muted);font-weight:500}
 
-  .status-badge {
-    display: flex; align-items: center; gap: 8px;
-    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
-    border: 1px solid;
-  }
-  .status-badge.live   { background: #00C89614; border-color: var(--mint); color: var(--mint); }
-  .status-badge.stale  { background: #F5A62314; border-color: var(--amber); color: var(--amber); }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-  .dot.pulse { animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  /* ---------- HEADER BAND ---------- */
+  .band{color:#fff;padding:46px 0 50px;
+    background:radial-gradient(circle at 18% 22%, rgba(99,255,177,.42), transparent 46%),
+      radial-gradient(circle at 88% 12%, rgba(99,255,177,.18), transparent 40%),
+      linear-gradient(115deg,#4736FE,#2B2098)}
+  .band .wrap{max-width:1180px;margin:0 auto;padding:0 26px}
+  .eyebrow{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);padding:6px 14px;border-radius:999px;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+  .band h1{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:10px}
+  .band .sub{font-size:15px;max-width:700px;color:rgba(255,255,255,.86)}
 
-  /* ── Summary cards ── */
-  .cards {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px; padding: 28px 32px 0;
-  }
-  .card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 20px; position: relative; overflow: hidden;
-  }
-  .card::after {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: var(--blue);
-  }
-  .card.done::after  { background: var(--mint); }
-  .card.blocked::after { background: var(--red); }
-  .card.warn::after  { background: var(--amber); }
-  .card-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
-  .card-value { font-size: 36px; font-weight: 700; margin-top: 6px; line-height: 1; }
-  .card-sub   { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  /* ---------- LAYOUT ---------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:0 26px}
+  section{padding:42px 0}
+  .sectitle{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
 
-  /* ── Progress bar ── */
-  .progress-section { padding: 28px 32px 0; }
-  .progress-section h2 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
-  .progress-bar {
-    height: 10px; border-radius: 6px; background: var(--border);
-    overflow: hidden; position: relative;
-  }
-  .progress-fill {
-    height: 100%; border-radius: 6px;
-    background: linear-gradient(90deg, var(--blue), var(--mint));
-    transition: width .8s ease;
-  }
-  .progress-label { font-size: 13px; color: var(--muted); margin-top: 6px; text-align: right; }
+  /* KPI */
+  .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}
+  .kpi .card{padding:20px 22px}
+  .kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+  .kpi .value{font-size:29px;font-weight:800;letter-spacing:-.02em;margin-top:6px}
+  .kpi .value.accent{color:var(--blue)}
+  .kpi .meta{font-size:12px;color:var(--muted);margin-top:2px}
 
-  /* ── Table ── */
-  .table-section { padding: 28px 32px 40px; }
-  .table-section h2 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 14px; }
-  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead tr { background: #1C1C2A; }
-  th {
-    padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 600;
-    color: var(--muted); text-transform: uppercase; letter-spacing: .7px;
-    border-bottom: 1px solid var(--border); white-space: nowrap;
-  }
-  td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: #1A1A26; }
+  /* charts */
+  .charts{display:grid;gap:20px}
+  .charts .row2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .chartcard{padding:22px}
+  .chartcard h3{font-size:14.5px;font-weight:700;margin-bottom:4px;letter-spacing:-.01em}
+  .chartcard p{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .canvas-wrap{position:relative;height:300px}
+  .canvas-wrap.tall{height:430px}
 
-  .pill {
-    display: inline-block; padding: 3px 10px; border-radius: 20px;
-    font-size: 11px; font-weight: 600; white-space: nowrap;
-  }
-  .pill-done       { background: #00C89620; color: var(--mint); }
-  .pill-blocked    { background: #FF4D4D20; color: var(--red); }
-  .pill-inprogress { background: #4736FE20; color: #847CFE; }
-  .pill-pending    { background: #F5A62320; color: var(--amber); }
-  .pill-default    { background: var(--border); color: var(--muted); }
+  /* table */
+  .tablecard{padding:8px 4px 4px;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:1020px}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;text-align:left;padding:14px 16px;border-bottom:2px solid var(--line);white-space:nowrap}
+  td{padding:14px 16px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#FAFAFE}
+  td.city{font-weight:700;white-space:nowrap}
+  .pbar{width:110px;height:8px;border-radius:99px;background:var(--line);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+  .pbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#4736FE,#63FFB1)}
+  .pval{font-size:12.5px;font-weight:700;color:var(--muted)}
+  .pill{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .daybadge{display:inline-block;padding:3px 9px;border-radius:8px;font-size:12px;font-weight:600;background:var(--bg);color:var(--muted);white-space:nowrap}
+  .daybadge.warn{background:rgba(245,158,11,.16);color:#B45309}
+  .poc{font-size:12.5px;white-space:nowrap}
+  .nowrap{white-space:nowrap}
+  .remark{font-size:12.5px;color:var(--muted);min-width:240px;max-width:320px}
 
-  /* ── Filter bar ── */
-  .filter-bar {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    padding: 0 32px 18px;
-  }
-  .filter-btn {
-    padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
-    border: 1px solid var(--border); background: transparent; color: var(--muted);
-    cursor: pointer; transition: all .15s;
-  }
-  .filter-btn:hover, .filter-btn.active {
-    background: var(--blue); border-color: var(--blue); color: #fff;
-  }
-  input.search {
-    padding: 5px 14px; border-radius: 20px; font-size: 12px;
-    border: 1px solid var(--border); background: var(--surface); color: var(--text);
-    min-width: 180px; outline: none;
-  }
-  input.search:focus { border-color: var(--blue); }
+  /* insights */
+  .insights{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .insight{padding:18px 20px;display:flex;gap:13px;align-items:flex-start}
+  .idot{width:11px;height:11px;border-radius:50%;flex:0 0 auto;margin-top:5px}
+  .insight .it{font-weight:700;font-size:14px;margin-bottom:2px;letter-spacing:-.01em}
+  .insight .in{font-size:13px;color:var(--muted)}
 
-  /* ── Footer ── */
-  footer {
-    text-align: center; padding: 16px; font-size: 11px; color: var(--muted);
-    border-top: 1px solid var(--border);
-  }
+  /* ---------- STORY TAB ---------- */
+  .hl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:8px}
+  .hl .card{padding:20px 22px}
+  .hl .htag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+  .hl .htag .d{width:9px;height:9px;border-radius:50%}
+  .hl .big{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+  .hl .sm{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .timeline{position:relative;padding-left:8px}
+  .tlitem{position:relative;display:grid;grid-template-columns:96px 1fr;gap:16px;padding:0 0 4px 0}
+  .tldate{text-align:right;font-size:12px;font-weight:600;color:var(--muted);padding-top:16px;white-space:nowrap}
+  .tlbody{border-left:2px solid var(--line);padding:14px 0 22px 22px;position:relative}
+  .tlbody::before{content:"";position:absolute;left:-7px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+  .tlitem:last-child .tlbody{padding-bottom:2px}
+  .tlhead{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px}
+  .tlcity{font-weight:800;font-size:15px;letter-spacing:-.01em}
+  .tlchip{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:var(--bluel);color:var(--blued)}
+  .tlchip.prog{background:#E9F9F0;color:#15A66A}
+  .tlfield{font-size:13.5px}
+  .tlfield b{font-weight:700}
+  .tlquote{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:5px;border-left:2px solid var(--bluel);padding-left:10px}
+  .tlmeta{font-size:11px;color:var(--muted);margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
+  .tlmeta .s{font-weight:600}
 
-  /* ── Loading / error ── */
-  .msg { text-align: center; padding: 60px 32px; color: var(--muted); font-size: 14px; }
+  /* story editorial */
+  .bandstats{display:flex;flex-wrap:wrap;gap:26px;margin-top:22px;color:#fff}
+  .bandstats .s .n{font-size:26px;font-weight:800;letter-spacing:-1px}
+  .bandstats .s .l{font-size:11.5px;opacity:.85;max-width:170px;margin-top:2px}
+  .storywrap section{padding:34px 0;border-top:1px solid var(--line)}
+  .storywrap section:first-child{border-top:none;padding-top:10px}
+  .prose p{margin-bottom:13px;font-size:15px}
+  .prose b{color:var(--blued);font-weight:700}
+  .sec2{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+  .subc{color:var(--muted);font-size:14.5px;margin-bottom:20px;max-width:780px}
+  .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:start}
+  .callout{background:linear-gradient(120deg,#fff,#F3F1FF);border:1px solid var(--bluel)}
+  .cap{font-size:12px;color:var(--muted);margin-top:6px}
+  .numgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+  .numgrid .v{font-size:26px;font-weight:800;color:var(--blue);letter-spacing:-.5px}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .step .ic{width:42px;height:42px;border-radius:11px;background:var(--bluel);display:flex;align-items:center;justify-content:center;margin-bottom:11px;font-size:23px}
+  .step .num{font-size:11px;font-weight:800;color:var(--blue)}
+  .step h4{font-size:14px;margin:2px 0 5px;font-weight:700}
+  .step p{font-size:12.5px;color:var(--muted)}
+  .jtl{position:relative;margin-top:8px;padding-left:26px}
+  .jtl:before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--bluel)}
+  .jtl .it{position:relative;margin-bottom:18px}
+  .jtl .it:last-child{margin-bottom:0}
+  .jtl .it:before{content:"";position:absolute;left:-23px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 0 0 2px var(--bluel)}
+  .jtl .d{font-size:12px;font-weight:700;color:var(--blue)}
+  .jtl .t{font-size:14px;font-weight:700}
+  .jtl .x{font-size:13px;color:var(--muted)}
+  .press{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .pcard{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;transition:.18s}
+  .pcard:hover{border-color:var(--blue);box-shadow:0 4px 14px rgba(71,54,254,.12)}
+  .pcard .src{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);margin-bottom:6px}
+  .pcard .h{font-size:13.5px;font-weight:600;line-height:1.4}
+  .pcard .go{font-size:12px;color:var(--muted);margin-top:9px;font-weight:600}
 
-  @media (max-width: 600px) {
-    header { flex-direction: column; gap: 12px; align-items: flex-start; }
-    .cards { padding: 20px 16px 0; }
-    .filter-bar, .table-section, .progress-section { padding-left: 16px; padding-right: 16px; }
+  footer{padding:30px 0 50px;text-align:center;color:var(--muted);font-size:12px}
+
+  @media(max-width:900px){
+    .charts .row2{grid-template-columns:1fr}
+    .insights{grid-template-columns:1fr}
+    .grid2{grid-template-columns:1fr}
+    .steps{grid-template-columns:repeat(2,1fr)}
+    nav{flex-wrap:wrap}
+    .band h1{font-size:27px}
+    .tlitem{grid-template-columns:64px 1fr;gap:10px}
   }
 </style>
 </head>
 <body>
 
-<script>
-const CONFIG = {
-  DATA_URL: "https://raw.githubusercontent.com/Setiavipul-78/project-protect-dashboard/main/data.json",
-  REFRESH_SECONDS: 300,
-};
-</script>
-
-<header>
-  <div class="logo">
-    <div class="logo-mark">PP</div>
-    <div>
-      <div class="logo-text">Project Protect</div>
-      <div class="logo-sub">Road Safety Signs · Cars24</div>
+<nav>
+  <div class="brand">
+    <div class="logo">C</div>
+    <div class="wordmark">Cars<span>24</span><small>Project Protect</small></div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="navright">
+    <button type="button" class="refresh" id="refreshBtn" title="Refresh data">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Refresh
+    </button>
+    <div class="status">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Snapshot</span>
+      <span class="synced" id="synced"></span>
     </div>
   </div>
-  <div id="statusBadge" class="status-badge stale">
-    <span class="dot"></span>
-    <span id="statusText">Connecting…</span>
+</nav>
+
+<div class="band">
+  <div class="wrap">
+    <span class="eyebrow" id="bandEyebrow">—</span>
+    <h1 id="bandTitle">—</h1>
+    <p class="sub" id="bandSub">—</p>
+    <div class="bandstats" id="bandStats" style="display:none"></div>
   </div>
-</header>
-
-<div id="cards" class="cards"></div>
-<div class="progress-section">
-  <h2>Overall Completion</h2>
-  <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width:0%"></div></div>
-  <div id="progressLabel" class="progress-label">—</div>
 </div>
 
-<div class="filter-bar" style="padding-top:20px">
-  <input id="searchBox" class="search" type="text" placeholder="Search location…" oninput="renderTable()">
-  <button class="filter-btn active" data-phase="All" onclick="setPhase(this)">All</button>
-  <button class="filter-btn" data-phase="Done" onclick="setPhase(this)">Done</button>
-  <button class="filter-btn" data-phase="Installation" onclick="setPhase(this)">Installation</button>
-  <button class="filter-btn" data-phase="Procurement" onclick="setPhase(this)">Procurement</button>
-  <button class="filter-btn" data-phase="Blocked" onclick="setPhase(this)">Blocked</button>
-</div>
+<main class="wrap" id="view"></main>
 
-<div class="table-section">
-  <h2 id="tableHeading">All Locations</h2>
-  <div class="table-wrap"><div id="tableContainer" class="msg">Loading data…</div></div>
-</div>
-
-<footer id="footer">Last refreshed: —</footer>
+<footer>
+  Cars24 · Project Protect — Challan Enforcement &amp; Road Safety rollout · refreshes every <span id="refMin">5</span> min from the live tracker
+</footer>
 
 <script>
-// ── State ──────────────────────────────────────────────────
-let allRows    = [];
-let headers    = [];
-let activePhase = 'All';
+/* ===================== CONFIG ===================== */
+const CONFIG = {
+  // Same-origin: on GitHub Pages, index.html and data.json live in the same repo,
+  // so this resolves to https://<user>.github.io/<repo>/data.json. (Opened from disk,
+  // the fetch fails and the embedded snapshot is used.)
+  DATA_URL: "data.json",
+  REFRESH_SECONDS: 300
+};
 
-// ── Bootstrap ─────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  loadData();
-  setInterval(loadData, CONFIG.REFRESH_SECONDS * 1000);
+/* ===================== EMBEDDED SNAPSHOT (fallback) ===================== */
+const SNAPSHOT = /*__SNAPSHOT__*/{"generatedAt":"2026-06-14T17:44:14Z","source":"Project Protect Tracker","spreadsheetId":"1xWP7qiEIYX4VQPqE0-pqhN4IeETvMoqm6yNRAmd9YxM","programs":[{"key":"Challan Billboard","label":"Challan Billboards","gates":[{"gate":"Gate 1 · TP Permission","steps":["Meeting Done","MoU Sent","MoU Signed"]},{"gate":"Gate 2 · Municipal Permission","steps":["Meeting Done","Application Sent","Signed"]},{"gate":"Gate 3 · Location Scouting","steps":["Recce Done","Location Identified","Mockup Received","Site Permission (TP+Municipal)","Layout Finalised"]},{"gate":"Gate 4 · Procurement","steps":["PR Raised","PO Released","Advance Released"]},{"gate":"Gate 5 · Installation","steps":["Foundation Done","Screen Installed","Screen Live"]},{"gate":"Gate 6 · Technical & Go-Live","steps":["ANPR camera installed","Electricity & WiFi done","API in place","Testing live","Testing completed","BILLBOARD LIVE"]}],"rows":[{"city":"Bangalore","phase":"Gate 6 · Technical & Go-Live","progress":0.826,"permPOC":"Prachi Sharma","vendorPOC":"Pooja Jena","lastUpdate":"10 Jun 2026","remark":"Permissions received; installing ANPR cameras on junction. Upgrade of original viral site + MG Road.","expected":"31st May","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Done","MoU Signed":"Done"},"Gate 2 · Municipal Permission":{"Meeting Done":"Done","Application Sent":"Done","Signed":"Done"},"Gate 3 · Location Scouting":{"Recce Done":"Done","Location Identified":"Done","Mockup Received":"Done","Site Permission (TP+Municipal)":"Done","Layout Finalised":"Done"},"Gate 4 · Procurement":{"PR Raised":"Done","PO Released":"Done","Advance Released":"Done"},"Gate 5 · Installation":{"Foundation Done":"Done","Screen Installed":"Done","Screen Live":"Done"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"In Progress","Electricity & WiFi done":"In Progress","API in place":"Done","Testing live":"In Progress","Testing completed":"Pending","BILLBOARD LIVE":"Done"}}},{"city":"Jaipur","phase":"Gate 6 · Technical & Go-Live","progress":0.957,"permPOC":"Yuvraj Yadav","vendorPOC":"Yuvraj Yadav","lastUpdate":"13 Jun 2026","remark":"Rambagh live in testing; OTS camera offline (wires cut). Full launch + enforcement app at DCP inauguration.","expected":"Tomorrow","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Done","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Done","Application Sent":"Done","Signed":"Done"},"Gate 3 · Location Scouting":{"Recce Done":"Done","Location Identified":"Done","Mockup Received":"Done","Site Permission (TP+Municipal)":"Done","Layout Finalised":"Done"},"Gate 4 · Procurement":{"PR Raised":"Done","PO Released":"Done","Advance Released":"Done"},"Gate 5 · Installation":{"Foundation Done":"Done","Screen Installed":"Done","Screen Live":"Done"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Done","Electricity & WiFi done":"Done","API in place":"Done","Testing live":"Done","Testing completed":"Done","BILLBOARD LIVE":"Done"}}},{"city":"Gurgaon","phase":"Gate 5 · Installation","progress":0.652,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"11 Jun 2026","remark":"MCG permission resolved 1 Jun; concrete/foundation done 2 Jun. Targeting live by 10 Jun.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Done","MoU Signed":"Done"},"Gate 2 · Municipal Permission":{"Meeting Done":"Done","Application Sent":"Done","Signed":"Done"},"Gate 3 · Location Scouting":{"Recce Done":"Done","Location Identified":"Done","Mockup Received":"Done","Site Permission (TP+Municipal)":"Done","Layout Finalised":"Done"},"Gate 4 · Procurement":{"PR Raised":"Done","PO Released":"Done","Advance Released":"Done"},"Gate 5 · Installation":{"Foundation Done":"Done","Screen Installed":"In Progress","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"In Progress","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Pune","phase":"Gate 3 · Location Scouting","progress":0.217,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"10 Jun 2026","remark":"Pending, will travel to Pune on Monday","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Done","MoU Signed":"Done"},"Gate 2 · Municipal Permission":{"Meeting Done":"Done","Application Sent":"In Progress","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"In Progress","Location Identified":"Done","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Ahmedabad","phase":"Gate 2 · Municipal Permission","progress":0.261,"permPOC":"Yashwardhan Verma","vendorPOC":"Pooja Jena","lastUpdate":"10 Jun 2026","remark":"MoU signed; AMC municipal approval expected ~10 days (new AMC board just formed).","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Done","MoU Signed":"Done"},"Gate 2 · Municipal Permission":{"Meeting Done":"Done","Application Sent":"In Progress","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Done","Location Identified":"In Progress","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Done","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Thane","phase":"Gate 1 · TP Permission","progress":0.13,"permPOC":"Akshay Manchanda","vendorPOC":"Pooja Jena","lastUpdate":"10 Jun 2026","remark":"Site recce in process; permission to follow once site finalised.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Done","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Done","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Surat","phase":"Gate 1 · TP Permission","progress":0.13,"permPOC":"Yuvraj Yadav","vendorPOC":"Yuvraj Yadav","lastUpdate":"10 Jun 2026","remark":"CP / Addl CP / DCP met and impressed; billboard + signage approvals expected in 10–15 days.","expected":"Next week","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"In Progress","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Done","Location Identified":"Done","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Ranchi","phase":"Gate 1 · TP Permission","progress":0.043,"permPOC":"Yuvraj Yadav","vendorPOC":"Yuvraj Yadav","lastUpdate":"10 Jun 2026","remark":"Met SP and ADG; final approval meeting pending.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Ghaziabad","phase":"Gate 1 · TP Permission","progress":0.043,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"Intro meeting with Addl CP / ADCP done; decision meeting scheduled next week.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Chennai","phase":"Gate 1 · TP Permission","progress":0.043,"permPOC":"Yuvraj Yadav","vendorPOC":"Yuvraj Yadav","lastUpdate":"4 Jun 2026","remark":"MoU sign-off on hold due to Tamil Nadu election; Addl CP indicates it will be sorted soon.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Kochi","phase":"Outreach","progress":0,"permPOC":"Yuvraj Yadav","vendorPOC":"Yuvraj Yadav","lastUpdate":"4 Jun 2026","remark":"Initial response from Dy Commissioner (L&O); demo meeting expected in ~10 days.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Delhi","phase":"Outreach","progress":0.043,"permPOC":"Yuvraj Yadav","vendorPOC":"Yuvraj Yadav","lastUpdate":"4 Jun 2026","remark":"Trying to reach Addl CP Vijayanta Arya & Dinesh Kumar Gupta; awaiting response.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Mohali","phase":"Outreach","progress":0,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"Trying to set up meeting with officials next week.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Noida","phase":"Backlog","progress":0,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"Backlog — not yet initiated.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Lucknow","phase":"Backlog","progress":0,"permPOC":"Deepanshu Gupta","vendorPOC":"Yuvraj Yadav","lastUpdate":"4 Jun 2026","remark":"Backlog — not yet initiated.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Faridabad","phase":"Backlog","progress":0,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"Backlog — not yet initiated.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}},{"city":"Rajkot","phase":"Backlog","progress":0,"permPOC":"Yuvraj Yadav","vendorPOC":"Yuvraj Yadav","lastUpdate":"4 Jun 2026","remark":"Backlog — not yet initiated.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Pending","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Location Scouting":{"Recce Done":"Pending","Location Identified":"Pending","Mockup Received":"Pending","Site Permission (TP+Municipal)":"Pending","Layout Finalised":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Foundation Done":"Pending","Screen Installed":"Pending","Screen Live":"Pending"},"Gate 6 · Technical & Go-Live":{"ANPR camera installed":"Pending","Electricity & WiFi done":"Pending","API in place":"Pending","Testing live":"Pending","Testing completed":"Pending","BILLBOARD LIVE":"Pending"}}}]},{"key":"Road Safety Signages","label":"Road Safety Signages","gates":[{"gate":"Gate 1 · TP Permission","steps":["Meeting Done","MoU Sent","MoU Signed"]},{"gate":"Gate 2 · Municipal Permission","steps":["Meeting Done","Application Sent","Signed"]},{"gate":"Gate 3 · Designing","steps":["Design Drafted","Design Approved by Dept","Vendor Recce Done","Recce Images Received","Sampling Done"]},{"gate":"Gate 4 · Procurement","steps":["PR Raised","PO Released","Advance Released"]},{"gate":"Gate 5 · Installation","steps":["Production Done","Boards Installed","Live"]}],"rows":[{"city":"Gurgaon","phase":"Live","progress":1.0,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"100 boards live (55 No Parking, 36 Stay-in-Lane; 9 removed by NHAI/MCG). Logo capped ~10% (MCG 0.2 sqm). Next round via GMDA MoU.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Done","MoU Signed":"Done"},"Gate 2 · Municipal Permission":{"Meeting Done":"Done","Application Sent":"Done","Signed":"Done"},"Gate 3 · Designing":{"Design Drafted":"Done","Design Approved by Dept":"Done","Vendor Recce Done":"Done","Recce Images Received":"Done","Sampling Done":"Done"},"Gate 4 · Procurement":{"PR Raised":"Done","PO Released":"Done","Advance Released":"Done"},"Gate 5 · Installation":{"Production Done":"Done","Boards Installed":"Done","Live":"Done"}}},{"city":"Ahmedabad","phase":"Gate 2 · Municipal Permission","progress":0.118,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"AMC (Kamlesh Damor) positive; awaiting finalised blackspot list. ~120 boards already installed by them.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Done","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Designing":{"Design Drafted":"Pending","Design Approved by Dept":"Pending","Vendor Recce Done":"Pending","Recce Images Received":"Pending","Sampling Done":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Production Done":"Pending","Boards Installed":"Pending","Live":"Pending"}}},{"city":"Surat","phase":"Gate 1 · TP Permission","progress":0.118,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"Signage proposal sent; MoU expected in ~10 days.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Done","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Designing":{"Design Drafted":"Pending","Design Approved by Dept":"Pending","Vendor Recce Done":"Pending","Recce Images Received":"Pending","Sampling Done":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Production Done":"Pending","Boards Installed":"Pending","Live":"Pending"}}},{"city":"Delhi","phase":"Gate 1 · TP Permission","progress":0.118,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"Meeting with Addl CP Vijayanta Arya done; proposal sent.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Done","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Designing":{"Design Drafted":"Pending","Design Approved by Dept":"Pending","Vendor Recce Done":"Pending","Recce Images Received":"Pending","Sampling Done":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Production Done":"Pending","Boards Installed":"Pending","Live":"Pending"}}},{"city":"Ghaziabad","phase":"Gate 1 · TP Permission","progress":0.059,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"Intro meeting with Addl CP / ADCP done; final meeting next week.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Designing":{"Design Drafted":"Pending","Design Approved by Dept":"Pending","Vendor Recce Done":"Pending","Recce Images Received":"Pending","Sampling Done":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Production Done":"Pending","Boards Installed":"Pending","Live":"Pending"}}},{"city":"Jaipur","phase":"Gate 1 · TP Permission","progress":0.118,"permPOC":"Yuvraj Yadav","vendorPOC":"Mohit Yadav","lastUpdate":"4 Jun 2026","remark":"Signage proposal initiated 3 Jun, after billboard testing with traffic police.","expected":"","steps":{"Gate 1 · TP Permission":{"Meeting Done":"Done","MoU Sent":"Pending","MoU Signed":"Pending"},"Gate 2 · Municipal Permission":{"Meeting Done":"Pending","Application Sent":"Pending","Signed":"Pending"},"Gate 3 · Designing":{"Design Drafted":"Done","Design Approved by Dept":"Pending","Vendor Recce Done":"Pending","Recce Images Received":"Pending","Sampling Done":"Pending"},"Gate 4 · Procurement":{"PR Raised":"Pending","PO Released":"Pending","Advance Released":"Pending"},"Gate 5 · Installation":{"Production Done":"Pending","Boards Installed":"Pending","Live":"Pending"}}}]}],"updates":[{"ts":"13 Jun 2026","city":"Jaipur","program":"Challan Billboard","field":"BILLBOARD LIVE","value":"Yes","confidence":0.9,"source":"project-protect","evidence":"Jaipur AI Challan Billboard is now LIVE"},{"ts":"13 Jun 2026","city":"Jaipur","program":"Challan Billboard","field":"ANPR camera installed","value":"Yes","confidence":0.8,"source":"project-protect","evidence":"system flagged hundreds of high-risk vehicles"},{"ts":"13 Jun 2026","city":"Jaipur","program":"Challan Billboard","field":"Remarks","value":"Viral across Jaipur","confidence":0.6,"source":"project-protect","evidence":"Jaipur Challan billboard has now gone viral"},{"ts":"10 Jun 2026","city":"Bangalore","program":"Challan Billboard","field":"BILLBOARD LIVE","value":"Yes","confidence":0.9,"source":"project-protect-coreteam","evidence":"Bangalore billboard is live"},{"ts":"10 Jun 2026","city":"Bangalore","program":"Challan Billboard","field":"API in place","value":"Done","confidence":0.9,"source":"project-protect-coreteam","evidence":"All APIs are in place"},{"ts":"10 Jun 2026","city":"Gurgaon","program":"Challan Billboard","field":"Foundation Done","value":"In Progress","confidence":0.7,"source":"project-protect-coreteam","evidence":"Foundation work for the Gurgaon challan billboard is underway"},{"ts":"10 Jun 2026","city":"Gurgaon","program":"Challan Billboard","field":"PO Released","value":"Done","confidence":0.7,"source":"project-protect-coreteam","evidence":"Payment was transferred yesterday"},{"ts":"10 Jun 2026","city":"Pune","program":"Challan Billboard","field":"MoU Signed","value":"Yes","confidence":0.9,"source":"project-protect-coreteam","evidence":"The MoU has been signed"},{"ts":"10 Jun 2026","city":"Pune","program":"Challan Billboard","field":"Location Identified","value":"Yes","confidence":0.8,"source":"project-protect-coreteam","evidence":"site of installation identified is the toll booth near the airport"},{"ts":"10 Jun 2026","city":"Gurgaon","program":"Road Safety Signages","field":"Boards Installed","value":"In Progress","confidence":0.7,"source":"road-safety-signs","evidence":"Road safety signs are being installed in Gurgaon today"},{"ts":"10 Jun 2026","city":"Thane","program":"Challan Billboard","field":"Recce Done","value":"In Progress","confidence":0.7,"source":"project-protect-coreteam","evidence":"Recce is aligned for Friday"},{"ts":"10 Jun 2026","city":"Ranchi","program":"Challan Billboard","field":"Meeting Done","value":"Scheduled","confidence":0.7,"source":"project-protect-coreteam","evidence":"Spoke with Rakesh Singh Sir (SP Traffic, Ranchi)"}]}/*__END__*/;
+
+const STORY_KEY = '__story__';
+const TAB_META = {
+  'Challan Billboard':{
+    eyebrow:'🚦 Project Protect · Challan Billboards',
+    title:'From one viral board to a nationwide road-safety network.',
+    sub:'ANPR billboards that surface a vehicle’s pending challans, insurance and PUC in seconds — donated to the traffic police and now rolling out across roughly 18 cities.',
+    noun:'billboard cities'
+  },
+  'Road Safety Signages':{
+    eyebrow:'🛑 Project Protect · Road Safety Signages',
+    title:'Safer roads, one board at a time.',
+    sub:'Permanent road-safety signages installed with traffic police and municipal bodies under Better Drives, Better Lives — live in Gurgaon, expanding city by city.',
+    noun:'signage cities'
+  },
+  '__story__':{
+    eyebrow:'🚦 Cars24 × CrashFree India',
+    title:'One billboard in Bengaluru made traffic fines <em style="font-style:normal;color:var(--mint)">impossible to ignore.</em>',
+    sub:'An ANPR camera reads your number plate, checks the VAHAN database, and flashes your pending challans on a giant screen in seconds — no ad, no sales pitch. It went viral. Now it’s scaling across India as Project Protect.',
+    noun:'',
+    stats:[
+      ['10,838','vehicles scanned, day-one stretch'],
+      ['2.1M','views on a single reel'],
+      ['1.8K','posts — trended on X, organically'],
+      ['~18','cities now in the pipeline']
+    ]
+  }
+};
+
+const STATUS_COLOR = {'Live':'#15A66A','In Progress':'#4736FE','Outreach':'#2B2098','Backlog':'#6B6B86','Delayed':'#E5484D'};
+const STATUS_ORDER = ['Live','In Progress','Outreach','Backlog','Delayed'];
+const CYCLE = ['#4736FE','#63FFB1','#FF4F01','#2B2098','#A4C2F4','#F9CB9C','#6C4AB6','#15A66A'];
+
+/* legacy-flat gate models (used when data.json is the old {headers,rows} feed) */
+const LEGACY_BILLBOARD_GATES = [
+  {gate:'Gate 1 · TP Permission',steps:['Meeting Done','MoU Sent','MoU Signed']},
+  {gate:'Gate 2 · Municipal Permission',steps:['Meeting Done','Application Sent','Signed']},
+  {gate:'Gate 3 · Location Scouting',steps:['Recce Done','Location Identified','Mockup Received','Site Permission (TP+Municipal)','Layout Finalised']},
+  {gate:'Gate 4 · Procurement',steps:['PR Raised','PO Released','Advance Released']},
+  {gate:'Gate 5 · Installation',steps:['Foundation Done','Screen Installed','Screen Live']},
+  {gate:'Gate 6 · Technical & Go-Live',steps:['ANPR camera installed','Electricity & WiFi done','API in place','Testing live','Testing completed','BILLBOARD LIVE']}
+];
+const LEGACY_SIGNAGE_GATES = [
+  {gate:'Gate 1 · TP Permission',steps:['Meeting Done','MoU Sent','MoU Signed']},
+  {gate:'Gate 2 · Municipal Permission',steps:['Meeting Done','Application Sent','Signed']},
+  {gate:'Gate 3 · Designing',steps:['Design Drafted','Design Approved by Dept','Vendor Recce Done','Recce Images Received','Sampling Done']},
+  {gate:'Gate 4 · Procurement',steps:['PR Raised','PO Released','Advance Released']},
+  {gate:'Gate 5 · Installation',steps:['Production Done','Boards Installed','Live']}
+];
+
+/* ===================== STATE ===================== */
+let DOC = {programs:[],updates:[]};
+let isLive = false;
+let activeKey = null;
+let charts = {};
+let timer = null;
+
+/* ===================== HELPERS ===================== */
+function toPct(v){
+  let n=Number(String(v).replace('%','').trim());
+  if(isNaN(n)) return 0;
+  if(n<=1.0001) n=n*100;
+  return Math.round(n);
+}
+const isDone = v => String(v).trim().toLowerCase()==='done';
+function parseDate(s){ if(!s) return null; const d=new Date(s); return isNaN(d)?null:d; }
+function daysInStage(s){
+  const d=parseDate(s); if(!d) return null;
+  const t=new Date();
+  return Math.max(0, Math.round((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))/86400000));
+}
+function fmtDate(s){ const d=parseDate(s); return d?d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):(s||'—'); }
+function statusOf(r){
+  const p=toPct(r.progress);
+  if(p>=100 || /^live/i.test(r.phase||'')) return 'Live';
+  if(/backlog/i.test(r.phase||'')) return 'Backlog';
+  const d=daysInStage(r.lastUpdate);
+  if(d!==null && d>21) return 'Delayed';
+  if(/outreach/i.test(r.phase||'')) return 'Outreach';
+  return 'In Progress';
+}
+const programByKey = k => DOC.programs.find(p=>p.key===k);
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ===================== DATA LOAD ===================== */
+function normalizeDoc(j){
+  // New per-tab schema
+  if(j && Array.isArray(j.programs) && j.programs.length && Array.isArray(j.programs[0].rows)){
+    return {programs:j.programs, updates:Array.isArray(j.updates)?j.updates:[], generatedAt:j.generatedAt};
+  }
+  // Legacy flat schema {headers, rows[, updated]}
+  if(j && Array.isArray(j.headers) && Array.isArray(j.rows)){
+    return legacyToDoc(j);
+  }
+  return null;
+}
+
+function legacyToDoc(j){
+  const rows=j.rows;
+  const isSig = r => /road safety/i.test(r['Tracker Sheet']||'') || r['Testing live']==='Road Safety Signages';
+  function mk(rowsFor, gates, key, label){
+    return {key,label,gates,rows:rowsFor.map(r=>{
+      const sig = key==='Road Safety Signages';
+      const steps={};
+      gates.forEach(g=>{steps[g.gate]={}; g.steps.forEach(s=>{ steps[g.gate][s]= sig? '' : (r[s]||''); });});
+      return {
+        city:r['City']||'—', phase:r['Current Phase']||'—', progress:r['Progress'],
+        permPOC:r['Permission POC']||'', vendorPOC:r['Vendor POC']||'',
+        lastUpdate: sig ? (r['ANPR camera installed']||'') : (r['Last update']||''),
+        remark: sig ? (r['Electricity & WiFi done']||'') : (r['Remarks']||''),
+        expected: sig ? '' : (r['Expected Go Live Date']||''),
+        steps
+      };
+    })};
+  }
+  const bb=rows.filter(r=>!isSig(r) && (r['Tracker Sheet']||'Challan Billboard')==='Challan Billboard');
+  const sg=rows.filter(isSig);
+  const programs=[mk(bb,LEGACY_BILLBOARD_GATES,'Challan Billboard','Challan Billboards')];
+  if(sg.length) programs.push(mk(sg,LEGACY_SIGNAGE_GATES,'Road Safety Signages','Road Safety Signages'));
+  return {programs, updates:[], generatedAt:j.updated, legacy:true};
+}
+
+async function loadData(){
+  try{
+    const res=await fetch(CONFIG.DATA_URL+(CONFIG.DATA_URL.includes('?')?'&':'?')+'cb='+Date.now(),{cache:'no-store'});
+    if(!res.ok) throw 0;
+    const doc=normalizeDoc(await res.json());
+    if(!doc) throw 0;
+    DOC=doc; isLive=true;
+  }catch(e){
+    DOC=normalizeDoc(SNAPSHOT)||{programs:[],updates:[]}; isLive=false;
+  }
+  if(!activeKey || (activeKey!==STORY_KEY && !programByKey(activeKey)))
+    activeKey=DOC.programs[0] && DOC.programs[0].key;
+}
+
+function updateStatus(){
+  document.getElementById('statusDot').classList.toggle('live',isLive);
+  document.getElementById('statusText').textContent = isLive?'Live':'Snapshot';
+  document.getElementById('synced').textContent = '· '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
+function renderTabs(){
+  const tabs=DOC.programs.map(p=>({key:p.key,label:p.label||p.key}));
+  tabs.push({key:STORY_KEY,label:'Story'});
+  document.getElementById('tabs').innerHTML=tabs.map(t=>
+    `<button type="button" class="tab ${t.key===activeKey?'active':''}" data-tab="${esc(t.key)}">${esc(t.label)}</button>`).join('');
+}
+
+/* ===================== RENDER ===================== */
+function render(){
+  renderTabs();
+  const meta=TAB_META[activeKey]||{eyebrow:'Project Protect',title:activeKey,sub:'',noun:''};
+  document.getElementById('bandEyebrow').textContent=meta.eyebrow;
+  document.getElementById('bandTitle').innerHTML=meta.title;
+  document.getElementById('bandSub').textContent=meta.sub;
+  const bs=document.getElementById('bandStats');
+  if(meta.stats && meta.stats.length){
+    bs.style.display='flex';
+    bs.innerHTML=meta.stats.map(s=>`<div class="s"><div class="n">${esc(s[0])}</div><div class="l">${esc(s[1])}</div></div>`).join('');
+  }else{ bs.style.display='none'; bs.innerHTML=''; }
+  if(activeKey===STORY_KEY) renderStory(); else renderProgram();
+  updateStatus();
+}
+
+function renderProgram(){
+  const prog=programByKey(activeKey)||{rows:[],gates:[]};
+  const meta=TAB_META[activeKey]||{noun:'cities'};
+  const rows=prog.rows||[];
+  const total=rows.length;
+  const live=rows.filter(r=>statusOf(r)==='Live').length;
+  const inPerm=rows.filter(r=>/^gate 1|^gate 2/i.test(r.phase||'')).length;
+  const attention=rows.filter(r=>{const s=statusOf(r);return s==='Delayed'||s==='Backlog';}).length;
+  const avg=total?Math.round(rows.reduce((a,r)=>a+toPct(r.progress),0)/total):0;
+
+  document.getElementById('view').innerHTML=`
+    <section>
+      <div class="kpi">
+        ${kpi('Cities Tracked',total,meta.noun)}
+        ${kpi('Live',live,'fully operational')}
+        ${kpiAccent('Avg Progress',avg+'%','across all gates')}
+        ${kpi('In Permission',inPerm,'at Gate 1 / Gate 2')}
+        ${kpi('Needs Attention',attention,'delayed or backlog')}
+      </div>
+    </section>
+    <section>
+      <div class="sectitle">Rollout analytics</div>
+      <div class="charts">
+        <div class="card chartcard">
+          <h3>Deployment progress by city</h3><p>Completion % per city, coloured by current status.</p>
+          <div class="canvas-wrap tall"><canvas id="cProgress"></canvas></div>
+        </div>
+        <div class="row2">
+          <div class="card chartcard">
+            <h3>Status distribution</h3><p>How cities split across rollout status.</p>
+            <div class="canvas-wrap"><canvas id="cDist"></canvas></div>
+          </div>
+          <div class="card chartcard">
+            <h3>Gate completion</h3><p>Share of this program's gate checklist marked done, network-wide.</p>
+            <div class="canvas-wrap"><canvas id="cGate"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="sectitle">City tracker</div>
+      <div class="card tablecard">
+        <table>
+          <thead><tr>
+            <th>City</th><th>Current Phase</th><th>Progress</th><th>Status</th>
+            <th>Days in stage</th><th>Permission POC</th><th>Vendor POC</th>
+            <th>Last update</th><th>Expected go-live</th><th>Remarks</th>
+          </tr></thead>
+          <tbody>${rows.length?rows.map(rowHtml).join(''):'<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">No rows for this program.</td></tr>'}</tbody>
+        </table>
+      </div>
+    </section>
+    <section>
+      <div class="sectitle">Insights</div>
+      <div class="insights">${insightsHtml(rows,prog)}</div>
+    </section>`;
+  buildCharts(rows,prog);
+}
+
+const kpi=(l,v,m)=>`<div class="card"><div class="label">${l}</div><div class="value">${v}</div><div class="meta">${m}</div></div>`;
+const kpiAccent=(l,v,m)=>`<div class="card"><div class="label">${l}</div><div class="value accent">${v}</div><div class="meta">${m}</div></div>`;
+
+function rowHtml(r){
+  const st=statusOf(r),col=STATUS_COLOR[st],p=toPct(r.progress),d=daysInStage(r.lastUpdate);
+  return `<tr>
+    <td class="city">${esc(r.city)||'—'}</td>
+    <td class="nowrap">${esc(r.phase)||'—'}</td>
+    <td class="nowrap"><span class="pbar"><i style="width:${Math.min(p,100)}%"></i></span><span class="pval">${p}%</span></td>
+    <td><span class="pill" style="background:${col}33;color:${col}">${st}</span></td>
+    <td>${d===null?'<span class="daybadge">—</span>':`<span class="daybadge ${d>21?'warn':''}">${d} d</span>`}</td>
+    <td class="poc">${esc(r.permPOC)||'—'}</td>
+    <td class="poc">${esc(r.vendorPOC)||'—'}</td>
+    <td class="nowrap">${fmtDate(r.lastUpdate)}</td>
+    <td class="nowrap">${esc(r.expected)||'—'}</td>
+    <td class="remark">${esc(r.remark)||'—'}</td>
+  </tr>`;
+}
+
+function gateCompletion(rows,prog){
+  return (prog.gates||[]).map(g=>{
+    let done=0,tot=0;
+    rows.forEach(r=>{const cells=(r.steps&&r.steps[g.gate])||{}; g.steps.forEach(s=>{tot++; if(isDone(cells[s])) done++;});});
+    return {gate:g.gate, short:g.gate.split(' · ')[0], pct: tot?Math.round(done/tot*100):0};
+  });
+}
+
+function insightsHtml(rows,prog){
+  if(!rows.length) return '<div class="card insight"><div class="in">No data for this program.</div></div>';
+  const out=[];
+  const live=rows.filter(r=>statusOf(r)==='Live');
+  const stale=rows.filter(r=>{const d=daysInStage(r.lastUpdate);return d!==null&&d>21;});
+  const avg=Math.round(rows.reduce((a,r)=>a+toPct(r.progress),0)/rows.length);
+  const top=rows.filter(r=>statusOf(r)!=='Live').slice().sort((a,b)=>toPct(b.progress)-toPct(a.progress))[0];
+  const ph={}; rows.filter(r=>statusOf(r)!=='Live').forEach(r=>ph[r.phase]=(ph[r.phase]||0)+1);
+  const bottleneck=Object.entries(ph).sort((a,b)=>b[1]-a[1])[0];
+  const gc=gateCompletion(rows,prog).filter(g=>g.pct<100).sort((a,b)=>a.pct-b.pct)[0];
+  out.push(insight(STATUS_COLOR['Live'],`${live.length} of ${rows.length} live`,
+    live.length?`${live.map(r=>esc(r.city)).join(', ')} ${live.length>1?'are':'is'} fully operational.`:'No city has reached go-live yet.'));
+  if(stale.length) out.push(insight(STATUS_COLOR['Delayed'],`${stale.length} ${stale.length>1?'cities':'city'} stale >21 days`,
+    `${stale.map(r=>esc(r.city)).join(', ')} ${stale.length>1?'have':'has'} no update in over 21 days.`));
+  else out.push(insight(STATUS_COLOR['Live'],'All updates within SLA','Every city was updated within the last 21 days.'));
+  if(bottleneck) out.push(insight(STATUS_COLOR['In Progress'],`Bottleneck: ${esc(bottleneck[0])}`,
+    `${bottleneck[1]} ${bottleneck[1]>1?'cities are':'city is'} concentrated here. Network avg progress ${avg}%.`));
+  if(gc) out.push(insight(STATUS_COLOR['Outreach'],`Lowest gate: ${esc(gc.short)}`,
+    `${esc(gc.gate)} is only ${gc.pct}% complete across all cities${top?` · ${esc(top.city)} leads the pipeline at ${toPct(top.progress)}%`:''}.`));
+  return out.join('');
+}
+const insight=(c,t,n)=>`<div class="card insight"><span class="idot" style="background:${c}"></span><div><div class="it">${t}</div><div class="in">${n}</div></div></div>`;
+
+/* ===================== STORY TAB ===================== */
+function allRows(){ return DOC.programs.flatMap(p=>p.rows.map(r=>({...r,program:p.label||p.key}))); }
+
+function storyTimeline(){
+  // Prefer the real Slack-sourced updates feed; otherwise synthesise from per-city last updates.
+  if(DOC.updates && DOC.updates.length){
+    return DOC.updates.map(u=>({
+      ts:u.ts||u.timestamp||'', city:u.city||u.location||'—', program:u.program||'',
+      field:u.field||'', value:u.value||u.newValue||'', evidence:u.evidence||'',
+      source:u.source||u.channel||'', confidence:u.confidence
+    })).sort((a,b)=>(parseDate(b.ts)||0)-(parseDate(a.ts)||0));
+  }
+  return allRows().filter(r=>r.lastUpdate).map(r=>({
+    ts:r.lastUpdate, city:r.city, program:r.program, field:'Current Phase', value:r.phase,
+    evidence:r.remark||'', source:'tracker', confidence:null
+  })).sort((a,b)=>(parseDate(b.ts)||0)-(parseDate(a.ts)||0));
+}
+
+const PRESS = [
+  {src:'Times of India', h:'Now, billboard in Bengaluru screams violations in real time', url:'https://timesofindia.indiatimes.com/city/bengaluru/now-billboard-in-bengaluru-screams-violations-in-real-time/articleshow/124096146.cms'},
+  {src:'Hindustan Times', h:"Billboard at Bengaluru's Trinity Circle shows your traffic violations in real time", url:'https://www.hindustantimes.com/cities/bengaluru-news/aipowered-billboard-at-bengalurus-trinity-circle-shows-your-traffic-violations-in-real-time-report-101758722525792-amp.html'},
+  {src:'Times Now', h:"Bengaluru's billboard will flash your unpaid challans in 10 seconds", url:'https://www.timesnownews.com/bengaluru/bengalurus-ai-billboard-will-flash-your-unpaid-challans-check-how-it-will-expose-you-in-10-seconds-bengaluru-news-article-152887201/amp'},
+  {src:'Moneycontrol', h:"Now showing: your car's pending traffic challans at a billboard in Bengaluru", url:'https://www.moneycontrol.com/news/india/now-showing-your-car-s-pending-traffic-challans-at-a-billboard-in-bengaluru-13574142.html'}
+];
+
+function renderStory(){
+  const tl=storyTimeline();
+  const items = tl.slice(0,24).map(u=>{
+    const isProg = /in progress/i.test(u.value);
+    const chip = u.program?`<span class="tlchip ${isProg?'prog':''}">${esc(u.program)}</span>`:'';
+    const conf = (u.confidence!=null && u.confidence!=='')?`<span class="s">conf ${Math.round(Number(u.confidence)*100)}%</span>`:'';
+    const src = u.source?`<span>#${esc(u.source)}</span>`:'';
+    return `<div class="tlitem">
+      <div class="tldate">${fmtDate(u.ts)}</div>
+      <div class="tlbody">
+        <div class="tlhead"><span class="tlcity">${esc(u.city)}</span>${chip}</div>
+        <div class="tlfield">${u.field?`<b>${esc(u.field)}</b> → `:''}${esc(u.value)||'update'}</div>
+        ${u.evidence?`<div class="tlquote">“${esc(u.evidence)}”</div>`:''}
+        <div class="tlmeta">${src}${conf}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const srcNote = (DOC.updates&&DOC.updates.length)
+    ? 'Live feed from the project Slack channels (project-protect, project-protect-coreteam, road-safety-signs).'
+    : "Synthesised from each city's latest tracker update — the Slack feed appears here once publishDashboardJson() includes the updates array.";
+
+  document.getElementById('view').innerHTML=`
+    <div class="storywrap">
+      <section><div class="grid2">
+        <div class="prose">
+          <h2 class="sec2">Why a challan billboard?</h2>
+          <p>India sits on a staggering pile of unpaid traffic fines — a challan crisis in the thousands of crores, with millions of violations going unaddressed every year. Fines feel abstract until they're personal.</p>
+          <p>So in <b>September 2025</b>, under our road-safety initiative <b>CrashFree India</b> and with the <b>Bengaluru Traffic Police</b>, we put up an <b>ANPR-powered billboard</b> at <b>Trinity Circle (1MG Mall)</b>. An ANPR camera reads plates from up to ~100 metres, checks the VAHAN database, and within seconds the screen shows that vehicle's pending challans, insurance or PUC status. Compliant drivers get a thumbs-up instead.</p>
+          <p>The deliberate choice that made it work: <b>we dropped the “Pay Now” call-to-action entirely.</b> No commercial hook — which is exactly why people shared it.</p>
+        </div>
+        <div class="card callout" style="padding:22px">
+          <h3 style="font-size:15px;font-weight:800;margin-bottom:4px">The numbers behind the moment</h3>
+          <div class="numgrid">
+            <div><div class="v">10,838</div><div class="cap">vehicles detected</div></div>
+            <div><div class="v">708</div><div class="cap">flagged with challans</div></div>
+            <div><div class="v">1,207</div><div class="cap">pending challans surfaced</div></div>
+            <div><div class="v">6.59%</div><div class="cap">hit rate</div></div>
+          </div>
+          <p class="cap" style="margin-top:14px">Picked up by national press and trended on X <b>before</b> any seeding from our side.</p>
+        </div>
+      </div></section>
+
+      <section>
+        <h2 class="sec2">How it works</h2>
+        <p class="subc">Four steps, start to finish in about ten seconds.</p>
+        <div class="steps">
+          <div class="step"><div class="ic">📷</div><div class="num">STEP 1</div><h4>Scan</h4><p>An ANPR camera reads number plates of approaching vehicles, ~100m before the screen.</p></div>
+          <div class="step"><div class="ic">🗄️</div><div class="num">STEP 2</div><h4>Check</h4><p>The plate is matched against the VAHAN database for challans, insurance &amp; PUC.</p></div>
+          <div class="step"><div class="ic">📺</div><div class="num">STEP 3</div><h4>Display</h4><p>Pending dues flash on the LED in seconds — or a congratulations for a clean record.</p></div>
+          <div class="step"><div class="ic">🚓</div><div class="num">STEP 4</div><h4>Act</h4><p>Flagged vehicles can be intercepted by traffic police via the Vehicle Alert enforcement app.</p></div>
+        </div>
+      </section>
+
+      <section><div class="grid2">
+        <div class="prose">
+          <h2 class="sec2">From experiment to Project Protect</h2>
+          <p>The Bengaluru board was a test. When it became one of the year's most talked-about road-safety moments, the call in <b>March 2026</b> was simple: scale it. That's when <b>Project Protect</b> was born — a multi-city programme for the challan billboard and a companion road-safety signage drive.</p>
+          <p>The model is intentional: billboards are <b>donated to the traffic police</b>, funded through CrashFree India's CSR spend. No commercial CTA, no hard-sell — infrastructure for safer roads, with Cars24 as enabler. It has since grown into a full <b>Vehicle Alert Enforcement Suite</b>, with multiple police approvals and a dozen-plus cities in discussion.</p>
+        </div>
+        <div class="card" style="padding:22px">
+          <h3 style="font-size:15px;font-weight:800;margin-bottom:4px">The journey</h3>
+          <div class="jtl">
+            <div class="it"><div class="d">Aug 2025</div><div class="t">The idea takes shape</div><div class="x">Internal “Project Protect” channel created — a month before launch.</div></div>
+            <div class="it"><div class="d">Sept 2025</div><div class="t">Bengaluru goes live &amp; viral</div><div class="x">Trinity Circle lights up; national press, X trends, 2.1M-view reel — all organic.</div></div>
+            <div class="it"><div class="d">March 2026</div><div class="t">Project Protect formed</div><div class="x">Decision to scale; vendors, permissions and CSR funding lined up.</div></div>
+            <div class="it"><div class="d">May–Jun 2026</div><div class="t">City rollouts</div><div class="x">Jaipur &amp; Gurgaon near launch; ~18 cities in the pipeline; MS Dhoni joins as ambassador.</div></div>
+          </div>
+        </div>
+      </div></section>
+
+      <section>
+        <h2 class="sec2">Why Cars24 invests in CrashFree India</h2>
+        <p class="subc">Our north star is “Better Drives, Better Lives.” CrashFree India puts that to work beyond our platform — tackling the human cost of unsafe roads in a country that loses around 1.8 lakh lives to crashes each year. The challan billboard is one expression; road-safety signages, pothole drives and enforcement tech are others.</p>
+        <div class="press">${PRESS.map(p=>`<a class="pcard" href="${p.url}" target="_blank" rel="noopener"><div class="src">${esc(p.src)}</div><div class="h">${esc(p.h)}</div><div class="go">Read article →</div></a>`).join('')}</div>
+      </section>
+
+      <section>
+        <h2 class="sec2">Latest from the field</h2>
+        <p class="subc">${srcNote}</p>
+        <div class="timeline">${items||'<div class="in" style="color:var(--muted)">No updates yet.</div>'}</div>
+      </section>
+    </div>`;
+}
+
+/* ===================== CHARTS ===================== */
+function destroyCharts(){ Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}}); charts={}; }
+function buildCharts(rows,prog){
+  destroyCharts();
+  if(typeof Chart==='undefined'||!rows.length) return;
+  Chart.defaults.font.family="'Geist',sans-serif"; Chart.defaults.color='#6B6B86';
+  const sorted=rows.slice().sort((a,b)=>toPct(b.progress)-toPct(a.progress));
+  charts.progress=new Chart(document.getElementById('cProgress'),{type:'bar',
+    data:{labels:sorted.map(r=>r.city),datasets:[{label:'Progress %',data:sorted.map(r=>toPct(r.progress)),
+      backgroundColor:sorted.map(r=>STATUS_COLOR[statusOf(r)]),borderRadius:5,borderSkipped:false,maxBarThickness:20}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.parsed.x}% · ${statusOf(sorted[c.dataIndex])} · ${sorted[c.dataIndex].phase}`}}},
+      scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#ECECF4'}},y:{grid:{display:false}}}}});
+  const present=STATUS_ORDER.filter(s=>rows.some(r=>statusOf(r)===s));
+  charts.dist=new Chart(document.getElementById('cDist'),{type:'doughnut',
+    data:{labels:present,datasets:[{data:present.map(s=>rows.filter(r=>statusOf(r)===s).length),
+      backgroundColor:present.map(s=>STATUS_COLOR[s]),borderColor:'#fff',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+      plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyle:'circle',padding:13,boxWidth:8}}}}});
+  const gc=gateCompletion(rows,prog);
+  charts.gate=new Chart(document.getElementById('cGate'),{type:'bar',
+    data:{labels:gc.map(g=>g.short),datasets:[{label:'% items done',data:gc.map(g=>g.pct),
+      backgroundColor:gc.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:46}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>gc[c[0].dataIndex].gate,label:c=>` ${c.parsed.y}% of checklist done`}}},
+      scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#ECECF4'}},x:{grid:{display:false}}}}});
+}
+
+/* ===================== EVENTS ===================== */
+document.getElementById('tabs').addEventListener('click',e=>{
+  const b=e.target.closest('.tab'); if(!b)return;
+  activeKey=b.dataset.tab; render();
+});
+document.getElementById('refreshBtn').addEventListener('click',async()=>{
+  const btn=document.getElementById('refreshBtn'); btn.style.opacity='.5'; btn.style.pointerEvents='none';
+  await loadData(); render(); btn.style.opacity=''; btn.style.pointerEvents='';
 });
 
-// ── Data loading ──────────────────────────────────────────
-async function loadData() {
-  try {
-    const res = await fetch(CONFIG.DATA_URL + '?cb=' + Date.now());
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    headers = json.headers || [];
-    allRows = (json.rows || []).map(obj => headers.map(h => obj[h] || ''));
-    renderCards();
-    renderTable();
-    setStatus(true);
-    document.getElementById('footer').textContent =
-      'Last refreshed: ' + new Date().toLocaleTimeString() +
-      (json.updated ? '  ·  Data as of ' + new Date(json.updated).toLocaleString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '');
-  } catch (e) {
-    console.error('Dashboard fetch error:', e);
-    setStatus(false);
-  }
-}
-
-// ── Cards ─────────────────────────────────────────────────
-function renderCards() {
-  const statusIdx = colIdx('status');
-  const phaseIdx  = colIdx('phase');
-
-  const counts = {};
-  let done = 0, blocked = 0, total = allRows.length;
-  allRows.forEach(r => {
-    const phase = (phaseIdx >= 0 ? r[phaseIdx] : (statusIdx >= 0 ? r[statusIdx] : '')) || 'Unknown';
-    counts[phase] = (counts[phase] || 0) + 1;
-    if (/done|complete/i.test(phase)) done++;
-    if (/block/i.test(phase)) blocked++;
-  });
-
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent = `${done} of ${total} locations completed (${pct}%)`;
-
-  const inProgress = total - done - blocked;
-  document.getElementById('cards').innerHTML = `
-    <div class="card"><div class="card-label">Total Locations</div><div class="card-value">${total}</div><div class="card-sub">across all channels</div></div>
-    <div class="card done"><div class="card-label">Done</div><div class="card-value">${done}</div><div class="card-sub">${pct}% complete</div></div>
-    <div class="card"><div class="card-label">In Progress</div><div class="card-value">${inProgress}</div><div class="card-sub">active right now</div></div>
-    <div class="card blocked"><div class="card-label">Blocked</div><div class="card-value">${blocked}</div><div class="card-sub">need attention</div></div>
-  `;
-}
-
-// ── Table ─────────────────────────────────────────────────
-function renderTable() {
-  const search    = document.getElementById('searchBox').value.toLowerCase();
-  const statusIdx = colIdx('status');
-  const phaseIdx  = colIdx('phase');
-
-  let rows = allRows.filter(r => {
-    const matchSearch = !search || r.some(c => c.toLowerCase().includes(search));
-    const phaseVal    = (phaseIdx >= 0 ? r[phaseIdx] : (statusIdx >= 0 ? r[statusIdx] : '')) || '';
-    const matchPhase  = activePhase === 'All' || phaseVal.toLowerCase().includes(activePhase.toLowerCase());
-    return matchSearch && matchPhase;
-  });
-
-  document.getElementById('tableHeading').textContent =
-    activePhase === 'All' ? `All Locations (${rows.length})` : `${activePhase} (${rows.length})`;
-
-  if (!rows.length) {
-    document.getElementById('tableContainer').innerHTML = '<p class="msg">No matching locations.</p>';
-    return;
-  }
-
-  const ths = headers.map(h => `<th>${h}</th>`).join('');
-  const trs = rows.map(r =>
-    '<tr>' + r.map((c, i) => `<td>${formatCell(c, headers[i])}</td>`).join('') + '</tr>'
-  ).join('');
-
-  document.getElementById('tableContainer').innerHTML = `
-    <table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
-}
-
-function formatCell(val, header) {
-  if (!val) return '<span style="color:var(--muted)">—</span>';
-  const h = (header || '').toLowerCase();
-  if (h.includes('status') || h.includes('phase')) return pillify(val);
-  if (h.includes('date') || h.includes('update')) {
-    const d = new Date(val);
-    return isNaN(d) ? val : d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
-  }
-  return escHtml(val);
-}
-
-function pillify(val) {
-  const v = val.toLowerCase();
-  let cls = 'pill-default';
-  if (/done|complete|finished/.test(v))  cls = 'pill-done';
-  else if (/block|hold|paused/.test(v))   cls = 'pill-blocked';
-  else if (/install|procur|planning|survey|test/.test(v)) cls = 'pill-inprogress';
-  else if (/pending|not start/.test(v))   cls = 'pill-pending';
-  return `<span class="pill ${cls}">${escHtml(val)}</span>`;
-}
-
-// ── Utilities ─────────────────────────────────────────────
-function colIdx(keyword) {
-  return headers.findIndex(h => String(h).toLowerCase().includes(keyword));
-}
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function setPhase(btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  activePhase = btn.dataset.phase;
-  renderTable();
-}
-function setStatus(isLive) {
-  const badge = document.getElementById('statusBadge');
-  const dot   = badge.querySelector('.dot');
-  badge.className = 'status-badge ' + (isLive ? 'live' : 'stale');
-  dot.className   = 'dot' + (isLive ? ' pulse' : '');
-  document.getElementById('statusText').textContent = isLive ? 'Live' : 'Snapshot';
-}
+/* ===================== INIT ===================== */
+document.getElementById('refMin').textContent=Math.round(CONFIG.REFRESH_SECONDS/60);
+(async function init(){
+  await loadData(); render();
+  if(timer) clearInterval(timer);
+  timer=setInterval(async()=>{await loadData(); render();}, CONFIG.REFRESH_SECONDS*1000);
+})();
 </script>
 </body>
 </html>
