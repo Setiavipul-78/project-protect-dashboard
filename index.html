@@ -279,14 +279,14 @@ const TAB_META = {
     context:[['6–7 s','detection → challan on screen'],['50–100 m','ANPR camera distance ahead'],['2–3','ANPR cameras per site'],['4–6 mo','typical campaign per board']],
     contextNote:'Built to work where it matters: the board sits beside a <b>traffic signal</b> so halted vehicles get dwell time to read it, and ANPR cameras placed <b>50–100 m ahead</b> buy the <b>6–7 seconds</b> needed to read the plate, query VAHAN via the Cars24 API, and render pending challans, PUC &amp; insurance — all before the driver reaches the screen.',
     gallery:[
-      {id:'1MwA1U_2-s1pU5uWAZoszLifnSGrkdmzi',cap:'Trinity Circle, Bengaluru — the board that started it all'},
-      {id:'14OOmdn9DLm3b2_gJvj9xYNDnzEsZJXbh',cap:'Real-time call-out: pending challans on the LED'},
-      {id:'1VsfhFdsLUbZTC5_5MYBKY72k-iJHLgsf',cap:'Reading plates as traffic slows at the signal'},
-      {id:'1n2hAciAhUGrXmLqUcSnOzCH5eudmprLT',cap:'Live at the 1MG Mall junction through the day'},
-      {id:'1KucMHVejUrOwogIYRwyzUTW7N5CkhhCw',cap:'Even a single pending challan surfaces instantly'},
-      {id:'15oPHSUVJ_eV810pgbfRvABkTWPkWWJuc',cap:'A clean record earns a thumbs-up instead'},
-      {id:'1PdDReItpbx68HaVyOM6g7CpkxgOPcBbD',cap:'After dark, the board keeps scanning'},
-      {id:'1keM_TDI7-dJ0zEwpkT0oEcQhx9OryPEo',cap:'ANPR camera array, 50–100 m ahead of the screen'}
+      {src:'img/billboard/bb1.jpg',cap:'Trinity Circle, Bengaluru — the board that started it all'},
+      {src:'img/billboard/bb2.jpg',cap:'Real-time call-out: pending challans on the LED'},
+      {src:'img/billboard/bb3.jpg',cap:'Reading plates as traffic slows at the signal'},
+      {src:'img/billboard/bb4.jpg',cap:'Live at the 1MG Mall junction through the day'},
+      {src:'img/billboard/bb5.jpg',cap:'Even a single pending challan surfaces instantly'},
+      {src:'img/billboard/bb6.jpg',cap:'A clean record earns a thumbs-up instead'},
+      {src:'img/billboard/bb7.jpg',cap:'After dark, the board keeps scanning'},
+      {src:'img/billboard/bb8.jpg',cap:'ANPR camera array, 50–100 m ahead of the screen'}
     ]
   },
   'Road Safety Signages':{
@@ -299,12 +299,12 @@ const TAB_META = {
     contextNote:'Gurgaon is the proof point — <b>100 boards</b> installed with the traffic police and municipal corporation. The next round chases bigger branding space through a <b>GMDA MoU</b>; every other city is still in early permission work.',
     journeys:[],
     gallery:[
-      {id:'167kC3m11EEdggT_IRWj78vR89k3TEDTb',cap:'‘No Parking’ board — Gurugram Police × Cars24, Jaipur Road, Sector 20'},
-      {id:'1QCozM2onOY_K5VlWMmV2mY7lgd2gfIwl',cap:'‘नो पार्किंग’ board near Aggarwal Dharamshala, Sector 3A'},
-      {id:'1WpsEOkDxDo6vOdIHd1amBaAQKI0fBoJc',cap:'Curbside board on a busy Sector 3A street'},
-      {id:'1jU7sun-TMxidLCo8di7BaSr-ouS6vnb_',cap:'Lit up at night — Udyog Vihar, Sector 19'},
-      {id:'13CMjVkT71OfWDypZ9vv2u8EnciEx-Pph',cap:'On the median at Sector 41'},
-      {id:'1m6gMiqeNB1asHmIO5xTsmO3FbLSkI1x_',cap:'Outside the District Court, Sector 11'}
+      {src:'img/signage/rs1.png',cap:'‘No Parking’ board — Gurugram Police × Cars24, Jaipur Road, Sector 20'},
+      {src:'img/signage/rs2.png',cap:'‘नो पार्किंग’ board near Aggarwal Dharamshala, Sector 3A'},
+      {src:'img/signage/rs3.png',cap:'Curbside board on a busy Sector 3A street'},
+      {src:'img/signage/rs4.png',cap:'Lit up at night — Udyog Vihar, Sector 19'},
+      {src:'img/signage/rs5.png',cap:'On the median at Sector 41'},
+      {src:'img/signage/rs6.png',cap:'Outside the District Court, Sector 11'}
     ]
   },
   '__story__':{
@@ -564,9 +564,9 @@ const PRESS=[
   {src:'Moneycontrol',h:"Now showing: your car's pending traffic challans at a billboard in Bengaluru",url:'https://www.moneycontrol.com/news/india/now-showing-your-car-s-pending-traffic-challans-at-a-billboard-in-bengaluru-13574142.html'}
 ];
 const STORY_PHOTOS=[
-  {id:'1MwA1U_2-s1pU5uWAZoszLifnSGrkdmzi',cap:'Trinity Circle, Bengaluru — the board that went viral'},
-  {id:'14OOmdn9DLm3b2_gJvj9xYNDnzEsZJXbh',cap:'Your pending challans, live on a giant LED'},
-  {id:'1PdDReItpbx68HaVyOM6g7CpkxgOPcBbD',cap:'No ad, no “Pay Now” — just the call-out'}
+  {src:'img/billboard/bb1.jpg',cap:'Trinity Circle, Bengaluru — the board that went viral'},
+  {src:'img/billboard/bb2.jpg',cap:'Your pending challans, live on a giant LED'},
+  {src:'img/billboard/bb7.jpg',cap:'No ad, no “Pay Now” — just the call-out'}
 ];
 function renderStory(){
   const tl=storyTimeline().slice(0,24);
@@ -582,7 +582,7 @@ function renderStory(){
           <div class="numgrid"><div><div class="v">10,838</div><div class="cap">vehicles detected</div></div><div><div class="v">708</div><div class="cap">flagged with challans</div></div><div><div class="v">1,207</div><div class="cap">pending challans surfaced</div></div><div><div class="v">6.59%</div><div class="cap">hit rate</div></div></div>
           <p class="cap" style="margin-top:14px">Picked up by national press and trended on X <b>before</b> any seeding from our side.</p></div>
       </div>
-      <div class="storystrip" style="margin-top:22px">${STORY_PHOTOS.map(g=>`<figure class="gcard"><img loading="lazy" src="https://drive.google.com/thumbnail?id=${g.id}&sz=w1000" alt="${esc(g.cap)}" referrerpolicy="no-referrer" onerror="this.closest('.gcard').style.display='none'"><figcaption class="cap">${esc(g.cap)}</figcaption></figure>`).join('')}</div>
+      <div class="storystrip" style="margin-top:22px">${STORY_PHOTOS.map(galleryItem).join('')}</div>
       </section>
       <section><h2 class="sec2">How it works</h2><p class="subc" style="margin-bottom:18px">Four steps, start to finish in about ten seconds.</p>
         <div class="steps">
