@@ -157,6 +157,19 @@
   .initmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:10px}
   .chip{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:var(--bluel);color:var(--blued)}
 
+  /* gallery + context */
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .gcard{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow);transition:transform .16s ease, box-shadow .16s ease}
+  .gcard:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(20,20,60,.10)}
+  .gcard img{width:100%;height:172px;object-fit:cover;display:block;background:linear-gradient(135deg,#EEF0FF,#E3E1FF)}
+  .gcard .cap{font-size:12px;color:var(--muted);padding:9px 13px;line-height:1.4}
+  .ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:6px}
+  .ctx .b{padding:16px 18px}
+  .ctx .b .n{font-size:22px;font-weight:800;color:var(--blue);letter-spacing:-.5px}
+  .ctx .b .t{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .storystrip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:4px}
+  @media(max-width:700px){.storystrip{grid-template-columns:1fr}}
+
   footer{padding:30px 0 50px;text-align:center;color:var(--muted);font-size:12px}
 
   /* ---------- interactivity & motion ---------- */
@@ -234,6 +247,18 @@ const TAB_META = {
        steps:[['Idea / channel','18 Aug 2025'],['17 days'],['First field test','4 Sep 2025'],['14 days'],['Live','~18 Sep 2025'],['6 days'],['Viral','24 Sep 2025']]},
       {city:'Jaipur', note:'MoU → live ≈ 75 days — permissions + camera install were the long pole, not the tech.',
        steps:[['DCP meeting / MoU','15 Mar 2026'],['73 days'],['API prod cutover','27 May 2026'],['2 days'],['Live (Rambagh)','29 May 2026'],['12 days'],['Inauguration','~10 Jun 2026']]}
+    ],
+    context:[['6–7 s','detection → challan on screen'],['50–100 m','ANPR camera distance ahead'],['2–3','ANPR cameras per site'],['4–6 mo','typical campaign per board']],
+    contextNote:'Built to work where it matters: the board sits beside a <b>traffic signal</b> so halted vehicles get dwell time to read it, and ANPR cameras placed <b>50–100 m ahead</b> buy the <b>6–7 seconds</b> needed to read the plate, query VAHAN via the Cars24 API, and render pending challans, PUC &amp; insurance — all before the driver reaches the screen.',
+    gallery:[
+      {id:'1MwA1U_2-s1pU5uWAZoszLifnSGrkdmzi',cap:'Trinity Circle, Bengaluru — the board that started it all'},
+      {id:'14OOmdn9DLm3b2_gJvj9xYNDnzEsZJXbh',cap:'Real-time call-out: pending challans on the LED'},
+      {id:'1VsfhFdsLUbZTC5_5MYBKY72k-iJHLgsf',cap:'Reading plates as traffic slows at the signal'},
+      {id:'1n2hAciAhUGrXmLqUcSnOzCH5eudmprLT',cap:'Live at the 1MG Mall junction through the day'},
+      {id:'1KucMHVejUrOwogIYRwyzUTW7N5CkhhCw',cap:'Even a single pending challan surfaces instantly'},
+      {id:'15oPHSUVJ_eV810pgbfRvABkTWPkWWJuc',cap:'A clean record earns a thumbs-up instead'},
+      {id:'1PdDReItpbx68HaVyOM6g7CpkxgOPcBbD',cap:'After dark, the board keeps scanning'},
+      {id:'1keM_TDI7-dJ0zEwpkT0oEcQhx9OryPEo',cap:'ANPR camera array, 50–100 m ahead of the screen'}
     ]
   },
   'Road Safety Signages':{
@@ -242,7 +267,10 @@ const TAB_META = {
     sub:'Permanent road-safety signages installed with traffic police and municipal bodies under Better Drives, Better Lives — live in Gurgaon, expanding city by city.',
     heading:'Road Safety Signages', noun:'signage cities',
     intro:'Permanent road-safety boards — No Parking, Stay-in-Lane and more — installed with traffic police and municipal bodies under <b>Better Drives, Better Lives</b>. <b>Gurgaon is live with 100 boards</b> and is the template; the open lever is branding space (capped by municipal logo rules), which the next round chases via a GMDA MoU. Everywhere else is early-stage permission work.',
-    journeys:[]
+    context:[['100','boards live in Gurgaon'],['55 / 36','No-Parking / Stay-in-Lane'],['~10%','logo cap (MCG 0.2 sqm)'],['GMDA','MoU for the next round']],
+    contextNote:'Gurgaon is the proof point — <b>100 boards</b> installed with the traffic police and municipal corporation. The next round chases bigger branding space through a <b>GMDA MoU</b>; every other city is still in early permission work.',
+    journeys:[],
+    gallery:[]
   },
   '__story__':{
     eyebrow:'🚦 Cars24 × CrashFree India',
@@ -379,6 +407,8 @@ function renderProgram(){
     <section>
       <h2 class="sec2">${esc(meta.heading)}</h2>
       <p class="subc">${meta.intro||''}</p>
+      ${meta.context?`<div class="ctx">${meta.context.map(c=>`<div class="card b"><div class="n">${esc(c[0])}</div><div class="t">${esc(c[1])}</div></div>`).join('')}</div>`:''}
+      ${meta.contextNote?`<p class="subc" style="margin-top:14px">${meta.contextNote}</p>`:''}
     </section>
     <section style="padding-top:6px">
       <div class="kpi">
@@ -388,6 +418,14 @@ function renderProgram(){
         ${kpi('Avg days in stage',avgDays,'since last movement')}
       </div>
     </section>
+    ${meta.gallery?`
+    <section>
+      <div class="sectitle">On the ground</div>
+      <p class="subc" style="margin:-8px 0 16px">${meta.gallery.length?'Real photos from the field — the campaign as it actually looks on the road.':'Signage photos live in the campaign deck.'}</p>
+      ${meta.gallery.length
+        ?`<div class="gallery">${meta.gallery.map(g=>`<figure class="gcard"><img loading="lazy" src="https://drive.google.com/thumbnail?id=${g.id}&sz=w1000" alt="${esc(g.cap)}" referrerpolicy="no-referrer" onerror="this.closest('.gcard').style.display='none'"><figcaption class="cap">${esc(g.cap)}</figcaption></figure>`).join('')}</div>`
+        :`<div class="card" style="padding:18px 20px"><div class="in" style="color:var(--muted);font-size:13px">Drop signage photos into a Drive folder (like the billboard folder) and set it link-viewable — share the folder ID and they'll appear here automatically.</div></div>`}
+    </section>`:''}
     <section>
       <div class="sectitle">City insights</div>
       <p class="subc" style="margin:-8px 0 16px">A one-line read on where every city stands — colour shows status, text is the latest note from the field.</p>
@@ -486,6 +524,11 @@ const PRESS=[
   {src:'Times Now',h:"Bengaluru's billboard will flash your unpaid challans in 10 seconds",url:'https://www.timesnownews.com/bengaluru/bengalurus-ai-billboard-will-flash-your-unpaid-challans-check-how-it-will-expose-you-in-10-seconds-bengaluru-news-article-152887201/amp'},
   {src:'Moneycontrol',h:"Now showing: your car's pending traffic challans at a billboard in Bengaluru",url:'https://www.moneycontrol.com/news/india/now-showing-your-car-s-pending-traffic-challans-at-a-billboard-in-bengaluru-13574142.html'}
 ];
+const STORY_PHOTOS=[
+  {id:'1MwA1U_2-s1pU5uWAZoszLifnSGrkdmzi',cap:'Trinity Circle, Bengaluru — the board that went viral'},
+  {id:'14OOmdn9DLm3b2_gJvj9xYNDnzEsZJXbh',cap:'Your pending challans, live on a giant LED'},
+  {id:'1PdDReItpbx68HaVyOM6g7CpkxgOPcBbD',cap:'No ad, no “Pay Now” — just the call-out'}
+];
 function renderStory(){
   const tl=storyTimeline().slice(0,24);
   const items=tl.map(u=>`<div class="card" style="padding:14px 18px;margin-bottom:10px"><div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap"><b style="font-size:14px">${esc(u.city)}</b>${u.program?`<span class="chip">${esc(u.program)}</span>`:''}<span style="font-size:12px;color:var(--muted)">${fmtDate(u.ts)}</span></div><div style="font-size:13.5px;margin-top:4px">${u.field?`<b>${esc(u.field)}</b> → `:''}${esc(u.value)||'update'}</div>${u.evidence?`<div style="font-size:12.5px;color:var(--muted);font-style:italic;margin-top:5px;border-left:2px solid var(--bluel);padding-left:10px">“${esc(u.evidence)}”</div>`:''}${u.source?`<div class="tlmeta">#${esc(u.source)}</div>`:''}</div>`).join('');
@@ -499,7 +542,9 @@ function renderStory(){
         <div class="card callout" style="padding:22px"><h3 style="font-size:15px;font-weight:800;margin-bottom:4px">The numbers behind the moment</h3>
           <div class="numgrid"><div><div class="v">10,838</div><div class="cap">vehicles detected</div></div><div><div class="v">708</div><div class="cap">flagged with challans</div></div><div><div class="v">1,207</div><div class="cap">pending challans surfaced</div></div><div><div class="v">6.59%</div><div class="cap">hit rate</div></div></div>
           <p class="cap" style="margin-top:14px">Picked up by national press and trended on X <b>before</b> any seeding from our side.</p></div>
-      </div></section>
+      </div>
+      <div class="storystrip" style="margin-top:22px">${STORY_PHOTOS.map(g=>`<figure class="gcard"><img loading="lazy" src="https://drive.google.com/thumbnail?id=${g.id}&sz=w1000" alt="${esc(g.cap)}" referrerpolicy="no-referrer" onerror="this.closest('.gcard').style.display='none'"><figcaption class="cap">${esc(g.cap)}</figcaption></figure>`).join('')}</div>
+      </section>
       <section><h2 class="sec2">How it works</h2><p class="subc" style="margin-bottom:18px">Four steps, start to finish in about ten seconds.</p>
         <div class="steps">
           <div class="step"><div class="ic">📷</div><div class="num">STEP 1</div><h4>Scan</h4><p>An ANPR camera reads plates of approaching vehicles, ~100m before the screen.</p></div>
