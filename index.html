@@ -418,14 +418,6 @@ function renderProgram(){
         ${kpi('Avg days in stage',avgDays,'since last movement')}
       </div>
     </section>
-    ${meta.gallery?`
-    <section>
-      <div class="sectitle">On the ground</div>
-      <p class="subc" style="margin:-8px 0 16px">${meta.gallery.length?'Real photos from the field — the campaign as it actually looks on the road.':'Signage photos live in the campaign deck.'}</p>
-      ${meta.gallery.length
-        ?`<div class="gallery">${meta.gallery.map(g=>`<figure class="gcard"><img loading="lazy" src="https://drive.google.com/thumbnail?id=${g.id}&sz=w1000" alt="${esc(g.cap)}" referrerpolicy="no-referrer" onerror="this.closest('.gcard').style.display='none'"><figcaption class="cap">${esc(g.cap)}</figcaption></figure>`).join('')}</div>`
-        :`<div class="card" style="padding:18px 20px"><div class="in" style="color:var(--muted);font-size:13px">Drop signage photos into a Drive folder (like the billboard folder) and set it link-viewable — share the folder ID and they'll appear here automatically.</div></div>`}
-    </section>`:''}
     <section>
       <div class="sectitle">City insights</div>
       <p class="subc" style="margin:-8px 0 16px">A one-line read on where every city stands — colour shows status, text is the latest note from the field.</p>
@@ -455,8 +447,20 @@ function renderProgram(){
         <thead><tr><th>City</th><th>Current Phase</th><th>Progress</th><th>Status</th><th>Days in stage</th><th>Permission POC</th><th>Vendor POC</th><th>Updated</th><th>Remarks</th></tr></thead>
         <tbody>${rows.length?rows.map(rowHtml).join(''):'<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px">No rows.</td></tr>'}</tbody>
       </table></div>
-    </section>`;
+    </section>
+    ${meta.gallery?`
+    <section>
+      <div class="sectitle">On the ground</div>
+      <p class="subc" style="margin:-8px 0 16px">${meta.gallery.length?'Real photos from the field — the campaign as it actually looks on the road.':'Signage photos coming soon.'}</p>
+      ${meta.gallery.length
+        ?`<div class="gallery">${meta.gallery.map(galleryItem).join('')}</div>`
+        :`<div class="card" style="padding:18px 20px"><div class="in" style="color:var(--muted);font-size:13px">Field photos will appear here once added to the repo's <code>img/signage</code> folder.</div></div>`}
+    </section>`:''}`;
   buildCharts(rows,prog);
+}
+function galleryItem(g){
+  const src = g.src ? g.src : ('https://drive.google.com/thumbnail?id='+g.id+'&sz=w1000');
+  return `<figure class="gcard"><img loading="lazy" src="${src}" alt="${esc(g.cap)}" referrerpolicy="no-referrer" onerror="this.closest('.gcard').style.display='none'"><figcaption class="cap">${esc(g.cap)}</figcaption></figure>`;
 }
 
 function cityInsight(r){const st=statusOf(r),col=STATUS_COLOR[st];return `<div class="card insight"><span class="idot" style="background:${col}"></span><div><div class="it">${esc(r.city)}</div><div class="in">${esc(r.remark)||esc(r.phase)||'—'}</div></div></div>`;}
