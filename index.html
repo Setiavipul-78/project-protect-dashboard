@@ -263,6 +263,11 @@
   .compl .cv{font-size:20px;font-weight:800;letter-spacing:-.3px}
   .compl .cl{font-size:11.5px;color:var(--muted);margin-top:2px;font-weight:600}
 
+  .panel{min-width:0}
+  .pfilters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .seg.sm{padding:2px}
+  .seg.sm button{padding:5px 10px;font-size:11.5px}
+  .chartcard .pfilters{margin-bottom:12px}
   .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
   table.cmp{min-width:520px}
   table.cmp th:first-child,table.cmp td.mlabel{text-align:left;font-weight:700}
@@ -474,12 +479,12 @@ function render(animate){
   updateStatus();
   const view=document.getElementById('view');
   view.classList.remove('anim'); void view.offsetWidth;   // restart entrance animation
-  if(animate!==false){ view.classList.add('anim'); countUpValues(); }
+  if(animate!==false){ view.classList.add('anim'); if(activeKey!==FUNNEL_KEY) countUpValues(); }
 }
 
 /* animate KPI numbers from 0 → value */
-function countUpValues(){
-  document.querySelectorAll('#view .kpi .value').forEach(elm=>{
+function countUpValues(root){
+  (root||document).querySelectorAll(root?'.kpi .value':'#view .kpi .value').forEach(elm=>{
     const raw=elm.textContent.trim(); const m=raw.match(/^(\d[\d,]*)(.*)$/);
     if(!m) return; const target=Number(m[1].replace(/,/g,'')); const suffix=m[2]||'';
     if(!isFinite(target)||target<=0) return;
@@ -677,8 +682,7 @@ function renderStory(){
     </div>`;
 }
 
-/* ===================== CHALLAN FUNNEL — ANALYTICS ===================== */
-let funnelCam='ALL', funnelWin='30d';
+/* ===================== CHALLAN FUNNEL — ANALYTICS (per-panel filters) ===================== */
 function fbData(){return (DOC&&DOC.funnel&&DOC.funnel.data)?DOC.funnel:FUNNEL_SNAPSHOT;}
 const nfmt=n=>Number(n||0).toLocaleString('en-IN');
 function crfmt(n){n=Number(n||0);return n>=1e7?'₹'+(n/1e7).toFixed(2)+' Cr':n>=1e5?'₹'+(n/1e5).toFixed(2)+' L':n>=1e3?'₹'+(n/1e3).toFixed(1)+'K':'₹'+nfmt(n);}
@@ -688,19 +692,25 @@ const WIN_DAYS={'24h':1,'3d':3,'7d':7,'30d':30,'all':9999};
 const VLABEL={PUC_EXPIRED:'PUC expired',INSURANCE_EXPIRED:'Insurance expired',CHALLAN_PENDING:'Challan pending',REPEAT_OFFENDER:'Repeat offender',INTER_STATE_CHALLAN:'Inter-state challan',FITNESS_EXPIRED:'Fitness expired',OVERAGE_VEHICLE:'Overage vehicle',BLACKLIST:'Blacklisted',VEHICLE_TYPE_MISMATCH:'Type mismatch',RC_EXPIRED:'RC expired',NO_SEATBELT:'No seatbelt',NO_HELMET:'No helmet',PHONE_USE:'Phone use',TRIPLE_RIDING:'Triple riding',STOLEN:'Stolen',THEFT_HISTORY:'Theft history',FIR_RECORDED:'FIR recorded',PLATE_TAMPERING:'Plate tampering',VEHICLE_DEFECT:'Vehicle defect',ACCIDENT_PRONE:'Accident prone',MISMATCH:'Plate mismatch',COURT_CASE_PENDING:'Court case'};
 const vlabel=k=>VLABEL[k]||String(k).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 const prettyClass=s=>String(s).replace(/_/g,' ').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,c=>c.toUpperCase());
-function fnSet(kind,val){if(kind==='cam')funnelCam=val;else funnelWin=val;renderFunnel();countUpValues();}
-window.fnSet=fnSet;
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function monthLabel(s){const p=String(s).split('-');return (MON[+p[1]-1]||p[1])+' '+p[0];}
 
-function funnelAgg(){
+/* ---- per-panel filter state (each chart/table filters independently) ---- */
+const PANEL={};
+function pstate(id){return PANEL[id]||(PANEL[id]={cam:'ALL',win:'30d'});}
+function psetCam(id,v){pstate(id).cam=v;renderPanel(id);}
+function psetWin(id,v){pstate(id).win=v;renderPanel(id);}
+window.psetCam=psetCam;window.psetWin=psetWin;
+
+/* ---- parameterised aggregators (cam, win) ---- */
+function aggFor(cam,win){
   const fd=fbData(), cams=fd.cameras||[];
-  const sel=funnelCam==='ALL'?cams.map(c=>c.id):[funnelCam];
-  const A={scans:0,alerts:0,intercepted:0,missed:0,pucExpired:0,pendingAmount:0,pendingCount:0,paidCount:0,
-    byType:{},vClass:{},offences:{},ins:{valid:0,expired:0,unknown:0},prev:{scans:0,alerts:0,intercepted:0},resp:[]};
+  const sel=cam==='ALL'?cams.map(c=>c.id):[cam];
+  const A={scans:0,alerts:0,intercepted:0,missed:0,pucExpired:0,pendingAmount:0,pendingCount:0,paidCount:0,byType:{},vClass:{},offences:{},ins:{valid:0,expired:0,unknown:0},prev:{scans:0,alerts:0,intercepted:0},resp:[]};
   sel.forEach(id=>{
-    const x=((fd.data||{})[id]||{})[funnelWin]; if(!x) return;
+    const x=((fd.data||{})[id]||{})[win]; if(!x) return;
     A.scans+=x.scans||0; A.alerts+=x.alerts||0; A.intercepted+=x.intercepted||0; A.missed+=x.missed||0; A.pucExpired+=x.pucExpired||0;
-    A.pendingAmount=Math.max(A.pendingAmount,x.pendingAmount||0);   // pending ₹/count are system-wide → represent, don't sum
-    A.pendingCount=Math.max(A.pendingCount,x.pendingCount||0); A.paidCount=Math.max(A.paidCount,x.paidCount||0);
+    A.pendingAmount=Math.max(A.pendingAmount,x.pendingAmount||0); A.pendingCount=Math.max(A.pendingCount,x.pendingCount||0); A.paidCount=Math.max(A.paidCount,x.paidCount||0);
     Object.entries(x.alertsByType||{}).forEach(([k,v])=>A.byType[k]=(A.byType[k]||0)+v);
     (x.vehicleClass||[]).forEach(b=>A.vClass[b.label]=(A.vClass[b.label]||0)+b.count);
     (x.offences||[]).forEach(o=>A.offences[o.label]=(A.offences[o.label]||0)+o.count);
@@ -714,112 +724,15 @@ function funnelAgg(){
   A.avgResponseMin=A.resp.length?Math.round(A.resp.reduce((a,b)=>a+b,0)/A.resp.length):null;
   return A;
 }
-function trendSeries(){
-  const fd=fbData(), sel=funnelCam==='ALL'?(fd.cameras||[]).map(c=>c.id):[funnelCam];
+function trendFor(cam,win){
+  const fd=fbData(), sel=cam==='ALL'?(fd.cameras||[]).map(c=>c.id):[cam];
   const m={}; sel.forEach(id=>((fd.trends||{})[id]||[]).forEach(p=>m[p.date]=(m[p.date]||0)+p.count));
   let arr=Object.keys(m).sort().map(d=>({date:d,count:m[d]}));
-  const days=WIN_DAYS[funnelWin]; if(days<9999) arr=arr.slice(-days);
+  const days=WIN_DAYS[win]; if(days<9999) arr=arr.slice(-days);
   return arr;
 }
-function seg(kind,cur,opts){return `<div class="seg">${opts.map(o=>`<button type="button" class="${o[0]===cur?'on':''}" onclick="fnSet('${kind}','${o[0]}')">${esc(o[1])}</button>`).join('')}</div>`;}
-function fdelta(cur,prev){if(!prev)return '';const d=Math.round((cur-prev)/prev*1000)/10;const up=d>=0;return ` <span class="fdelta ${up?'up':'down'}">${up?'▲':'▼'}${Math.abs(d)}%</span>`;}
-/* KPI card that renders only when it carries signal (drops zero/empty metrics) */
-function kpiIf(cond,label,value,meta,accent){return cond?`<div class="card"><div class="label">${label}</div><div class="value${accent?' accent':''}">${value}</div><div class="meta">${meta}</div></div>`:'';}
-
-function renderFunnel(){
-  const fd=fbData(), a=funnelAgg();
-  const camOpts=[['ALL','All']].concat((fd.cameras||[]).map(c=>[c.id,c.city]));
-  const winOpts=[['24h','24h'],['3d','3d'],['7d','7d'],['30d','30d'],['all','All']];
-  const asOf=fd.generatedAt?new Date(fd.generatedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
-  const scope=funnelCam==='ALL'?'all cameras':((fd.cameras||[]).find(c=>c.id===funnelCam)||{}).name||funnelCam;
-  const winName=WIN_LABEL[funnelWin]||funnelWin;
-  const wS=Math.max(a.flagRate,a.alerts>0?5:0), wI=Math.max(share(a.intercepted,a.scans),a.intercepted>0?2:0);
-  // top violation reasons (drop zeros), pretty-labelled
-  const reasons=Object.entries(a.byType||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,6);
-  const offs=Object.entries(a.offences||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,7);
-  const insTotal=a.ins.valid+a.ins.expired;
-  document.getElementById('view').innerHTML=`
-    <section>
-      <div class="fctrls">
-        <div class="fctrl"><span class="seglabel">Location</span>${seg('cam',funnelCam,camOpts)}</div>
-        <div class="fctrl"><span class="seglabel">Window</span>${seg('win',funnelWin,winOpts)}</div>
-        <span class="fasof"><span class="statusdot"></span>SATARK · ${esc(scope)} · as of ${esc(asOf)}</span>
-      </div>
-    </section>
-
-    <section style="padding-top:8px">
-      <div class="sectitle">Overview · ${esc(winName)}</div>
-      <div class="kpi">
-        ${kpiIf(true,'Vehicles scanned',nfmt(a.scans)+fdelta(a.scans,a.prev.scans),'number plates read by ANPR')}
-        ${kpiIf(true,'Violations detected',nfmt(a.alerts)+fdelta(a.alerts,a.prev.alerts),a.flagRate+'% of scanned carried a flag',true)}
-        ${kpiIf(a.actioned>0,'Interception rate',a.rate+'%',nfmt(a.intercepted)+' of '+nfmt(a.actioned)+' acted-on intercepted')}
-        ${kpiIf(a.avgResponseMin!=null,'Avg response time',a.avgResponseMin+' min','from alert to interception')}
-        ${kpiIf(a.pendingAmount>0,'Pending challan value',crfmt(a.pendingAmount),'system-wide, this window')}
-        ${kpiIf(a.pendingCount>0,'Pending challans',nfmt(a.pendingCount),nfmt(a.paidCount)+' paid in window')}
-      </div>
-    </section>
-
-    <section>
-      <div class="sectitle">The journey — camera to challan</div>
-      <p class="subc" style="margin:-8px 0 16px">Every vehicle scanned, narrowing down to the ones carrying a violation and the few enforcement acts on. Bar width = share of vehicles scanned.</p>
-      <div class="card funnelcard">
-        <div class="wfunnel">
-          <div class="wstage" style="width:100%;background:linear-gradient(90deg,#4736FE,#6C5CFF)"><b>${nfmt(a.scans)}</b><span>Vehicles scanned</span></div>
-          <div class="wconv"><span class="arw">▼</span> ${a.flagRate}% carried a violation on record</div>
-          <div class="wstage" style="width:${Math.max(wS,8)}%;background:linear-gradient(90deg,#2B2098,#5B4BD6)"><b>${nfmt(a.alerts)}</b><span>Violations detected</span></div>
-          <div class="wconv"><span class="arw">▼</span> ${share(a.intercepted,a.alerts)}% of flagged vehicles intercepted</div>
-          <div class="wstage" style="width:${Math.max(wI,8)}%;background:linear-gradient(90deg,#15A66A,#63FFB1);color:#04331f"><b>${nfmt(a.intercepted)}</b><span>Intercepted by police</span></div>
-        </div>
-        ${reasons.length?`<div class="reasons">${reasons.map(([k,v])=>`<div class="rchip"><div class="rv">${nfmt(v)}</div><div class="rl">${esc(vlabel(k))}</div><div class="rp">${share(v,a.alerts)}% of violations</div></div>`).join('')}</div>`:''}
-      </div>
-    </section>
-
-    <section>
-      <div class="charts"><div class="row2">
-        <div class="card chartcard"><h3>Enforcement outcome</h3><p>How the ${nfmt(a.alerts)} flagged vehicles resolved.</p><div class="canvas-wrap"><canvas id="cOutcome"></canvas></div></div>
-        <div class="card chartcard"><h3>Daily detections</h3><p>Violations surfaced per day · ${esc(winName).toLowerCase()}.</p><div class="canvas-wrap"><canvas id="cTrend"></canvas></div></div>
-      </div></div>
-    </section>
-
-    <section>
-      <div class="sectitle">Vehicle &amp; document analysis</div>
-      <div class="charts"><div class="row2">
-        <div class="card chartcard"><h3>Vehicle class mix</h3><p>What kinds of vehicles were scanned.</p><div class="canvas-wrap tall"><canvas id="cClass"></canvas></div></div>
-        <div class="card chartcard"><h3>Document compliance</h3><p>${insTotal?'Insurance status of scanned vehicles, plus PUC.':'No document data in this window.'}</p>
-          ${insTotal?`<div class="canvas-wrap"><canvas id="cIns"></canvas></div>
-          <div class="complrow">
-            <div class="compl"><div class="cv" style="color:#15A66A">${nfmt(a.ins.valid)}</div><div class="cl">Insurance valid</div></div>
-            <div class="compl"><div class="cv" style="color:#FF4F01">${nfmt(a.ins.expired)}</div><div class="cl">Insurance expired</div></div>
-            <div class="compl"><div class="cv" style="color:#F59E0B">${nfmt(a.pucExpired)}</div><div class="cl">PUC expired</div></div>
-          </div>`:'<div class="in" style="color:var(--muted);font-size:13px;padding:8px 0">—</div>'}
-        </div>
-      </div></div>
-    </section>
-
-    ${offs.length?`<section>
-      <div class="sectitle">Top offence types</div>
-      <p class="subc" style="margin:-8px 0 16px">The specific offences behind the pending challans in this window.</p>
-      <div class="card chartcard"><div class="canvas-wrap tall"><canvas id="cOff"></canvas></div></div>
-    </section>`:''}
-
-    ${monthlyAgg().length?`<section>
-      <div class="sectitle">Month-on-month</div>
-      <p class="subc" style="margin:-8px 0 16px">Scans and violations by calendar month${funnelCam==='ALL'?' — both cameras':' — '+esc(scope)}. Stored on every publish, so this history grows over time (independent of the window filter).</p>
-      <div class="card chartcard"><div class="canvas-wrap"><canvas id="cMonth"></canvas></div></div>
-    </section>`:''}
-
-    <section>
-      <div class="sectitle">Bangalore vs Jaipur · ${esc(winName)}</div>
-      <p class="subc" style="margin:-8px 0 16px">The full funnel side by side — <b>Combined</b> is the network total. Challans detected is per-camera; pending challan <b>value</b> stays system-wide (API limit).</p>
-      <div class="card tablecard"><div class="tscroll">${comparisonTable()}</div></div>
-      <div class="fnote">Live from the <b>SATARK ANPR system</b>. Scans / violations / interception / challans-detected are per-camera; <b>pending challan ₹ value &amp; count are system-wide</b> (the API doesn't split them by camera). “Intercepted” vs “Missed” reflect what officers logged in the Vehicle Alert app. Month-on-month history is persisted server-side so it survives even if SATARK purges old data.</div>
-    </section>`;
-  buildFunnelCharts(a);
-}
-const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-function monthLabel(s){const p=String(s).split('-');return (MON[+p[1]-1]||p[1])+' '+p[0];}
-function monthlyAgg(){
-  const fd=fbData(), sel=funnelCam==='ALL'?(fd.cameras||[]).map(c=>c.id):[funnelCam];
+function monthlyFor(cam){
+  const fd=fbData(), sel=cam==='ALL'?(fd.cameras||[]).map(c=>c.id):[cam];
   const m={};
   sel.forEach(id=>((fd.monthly||{})[id]||[]).forEach(r=>{
     const o=m[r.month]||(m[r.month]={month:r.month,scans:0,violations:0,intercepted:0,missed:0,challansDetected:0});
@@ -827,9 +740,92 @@ function monthlyAgg(){
   }));
   return Object.keys(m).sort().map(k=>m[k]);
 }
-function comparisonTable(){
+
+/* ---- per-panel filter bar ---- */
+function panelFilters(id,o){
+  o=o||{}; const st=pstate(id), fd=fbData();
+  const camOpts=[['ALL','All']].concat((fd.cameras||[]).map(c=>[c.id,c.city]));
+  const winOpts=[['24h','24h'],['3d','3d'],['7d','7d'],['30d','30d'],['all','All']];
+  let h='<div class="pfilters">';
+  if(o.cam!==false) h+='<div class="seg sm">'+camOpts.map(x=>`<button type="button" class="${x[0]===st.cam?'on':''}" onclick="psetCam('${id}','${x[0]}')">${esc(x[1])}</button>`).join('')+'</div>';
+  if(o.win!==false) h+='<div class="seg sm">'+winOpts.map(x=>`<button type="button" class="${x[0]===st.win?'on':''}" onclick="psetWin('${id}','${x[0]}')">${esc(x[1])}</button>`).join('')+'</div>';
+  return h+'</div>';
+}
+function fdelta(cur,prev){if(!prev)return '';const d=Math.round((cur-prev)/prev*1000)/10;const up=d>=0;return ` <span class="fdelta ${up?'up':'down'}">${up?'▲':'▼'}${Math.abs(d)}%</span>`;}
+function kpiIf(cond,label,value,meta,accent){return cond?`<div class="card"><div class="label">${label}</div><div class="value${accent?' accent':''}">${value}</div><div class="meta">${meta}</div></div>`:'';}
+
+/* ---- panel renderers ---- */
+const PANEL_RENDER={};
+PANEL_RENDER.overview=function(el,st){
+  const a=aggFor(st.cam,st.win);
+  el.innerHTML=panelFilters('overview',{})+`<div class="kpi">
+    ${kpiIf(true,'Vehicles scanned',nfmt(a.scans)+fdelta(a.scans,a.prev.scans),'plates read by ANPR')}
+    ${kpiIf(true,'Violations detected',nfmt(a.alerts)+fdelta(a.alerts,a.prev.alerts),a.flagRate+'% of scanned flagged',true)}
+    ${kpiIf(a.actioned>0,'Interception rate',a.rate+'%',nfmt(a.intercepted)+' of '+nfmt(a.actioned)+' intercepted')}
+    ${kpiIf(a.avgResponseMin!=null,'Avg response',a.avgResponseMin+' min','alert → interception')}
+    ${kpiIf(a.pendingAmount>0,'Pending challan value',crfmt(a.pendingAmount),'system-wide, this window')}
+    ${kpiIf(a.pendingCount>0,'Pending challans',nfmt(a.pendingCount),nfmt(a.paidCount)+' paid in window')}
+  </div>`;
+};
+PANEL_RENDER.journey=function(el,st){
+  const a=aggFor(st.cam,st.win);
+  const wS=Math.max(a.flagRate,a.alerts>0?10:0), wI=Math.max(share(a.intercepted,a.scans),a.intercepted>0?10:0);
+  const reasons=Object.entries(a.byType||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,6);
+  el.innerHTML=panelFilters('journey',{})+`<div class="card funnelcard">
+    <div class="wfunnel">
+      <div class="wstage" style="width:100%;background:linear-gradient(90deg,#4736FE,#6C5CFF)"><b>${nfmt(a.scans)}</b><span>Vehicles scanned</span></div>
+      <div class="wconv"><span class="arw">▼</span> ${a.flagRate}% carried a violation on record</div>
+      <div class="wstage" style="width:${wS}%;background:linear-gradient(90deg,#2B2098,#5B4BD6)"><b>${nfmt(a.alerts)}</b><span>Violations detected</span></div>
+      <div class="wconv"><span class="arw">▼</span> ${share(a.intercepted,a.alerts)}% of flagged vehicles intercepted</div>
+      <div class="wstage" style="width:${wI}%;background:linear-gradient(90deg,#15A66A,#63FFB1);color:#04331f"><b>${nfmt(a.intercepted)}</b><span>Intercepted by police</span></div>
+    </div>
+    ${reasons.length?`<div class="reasons">${reasons.map(([k,v])=>`<div class="rchip"><div class="rv">${nfmt(v)}</div><div class="rl">${esc(vlabel(k))}</div><div class="rp">${share(v,a.alerts)}% of violations</div></div>`).join('')}</div>`:''}
+  </div>`;
+};
+PANEL_RENDER.outcome=function(el,st){
+  const a=aggFor(st.cam,st.win), open=Math.max(0,a.alerts-a.intercepted-a.missed);
+  el.innerHTML=`<div class="card chartcard">${panelFilters('outcome',{})}<h3>Enforcement outcome</h3><p>Of ${nfmt(a.alerts)} flagged vehicles.</p><div class="canvas-wrap"><canvas id="cv-outcome"></canvas></div></div>`;
+  const cv=document.getElementById('cv-outcome'); if(!cv||typeof Chart==='undefined')return;
+  charts.outcome=new Chart(cv,{type:'doughnut',data:{labels:['Intercepted','Missed','Open / awaiting'],datasets:[{data:[a.intercepted,a.missed,open],backgroundColor:['#15A66A','#FF4F01','#F59E0B'],borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${nfmt(c.parsed)} (${share(c.parsed,a.alerts)}%)`}}}}});
+};
+PANEL_RENDER.trend=function(el,st){
+  const tr=trendFor(st.cam,st.win);
+  el.innerHTML=`<div class="card chartcard">${panelFilters('trend',{})}<h3>Daily detections</h3><p>Violations surfaced per day.</p>${tr.length?'<div class="canvas-wrap"><canvas id="cv-trend"></canvas></div>':'<div class="in" style="color:var(--muted);font-size:13px;padding:12px 0">No daily data for this window.</div>'}</div>`;
+  const cv=document.getElementById('cv-trend'); if(!cv||!tr.length||typeof Chart==='undefined')return;
+  charts.trend=new Chart(cv,{type:'line',data:{labels:tr.map(p=>p.date.slice(5)),datasets:[{data:tr.map(p=>p.count),borderColor:'#4736FE',backgroundColor:'rgba(71,54,254,.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${nfmt(c.parsed.y)} detections`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}}}});
+};
+PANEL_RENDER.class=function(el,st){
+  const a=aggFor(st.cam,st.win), vc=Object.entries(a.vClass||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,10);
+  el.innerHTML=`<div class="card chartcard">${panelFilters('class',{})}<h3>Vehicle class mix</h3><p>Kinds of vehicles scanned.</p>${vc.length?'<div class="canvas-wrap tall"><canvas id="cv-class"></canvas></div>':'<div class="in" style="color:var(--muted);font-size:13px;padding:12px 0">No vehicle data.</div>'}</div>`;
+  const cv=document.getElementById('cv-class'); if(!cv||!vc.length||typeof Chart==='undefined')return;
+  charts.class=new Chart(cv,{type:'bar',data:{labels:vc.map(e=>prettyClass(e[0])),datasets:[{data:vc.map(e=>e[1]),backgroundColor:vc.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${nfmt(c.parsed.x)} vehicles`}}},scales:{x:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}},y:{grid:{display:false}}}}});
+};
+PANEL_RENDER.compliance=function(el,st){
+  const a=aggFor(st.cam,st.win), insT=a.ins.valid+a.ins.expired;
+  el.innerHTML=`<div class="card chartcard">${panelFilters('compliance',{})}<h3>Document compliance</h3><p>${insT?'Insurance status of scanned vehicles, plus PUC.':'No document data.'}</p>${insT?`<div class="canvas-wrap"><canvas id="cv-compl"></canvas></div>
+    <div class="complrow"><div class="compl"><div class="cv" style="color:#15A66A">${nfmt(a.ins.valid)}</div><div class="cl">Insurance valid</div></div><div class="compl"><div class="cv" style="color:#FF4F01">${nfmt(a.ins.expired)}</div><div class="cl">Insurance expired</div></div><div class="compl"><div class="cv" style="color:#F59E0B">${nfmt(a.pucExpired)}</div><div class="cl">PUC expired</div></div></div>`:'<div class="in" style="color:var(--muted);font-size:13px;padding:12px 0">No document data in this window.</div>'}</div>`;
+  const cv=document.getElementById('cv-compl'); if(!cv||!insT||typeof Chart==='undefined')return;
+  charts.compliance=new Chart(cv,{type:'doughnut',data:{labels:['Valid','Expired'],datasets:[{data:[a.ins.valid,a.ins.expired],backgroundColor:['#15A66A','#FF4F01'],borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${nfmt(c.parsed)} (${share(c.parsed,insT)}%)`}}}}});
+};
+PANEL_RENDER.offence=function(el,st){
+  const a=aggFor(st.cam,st.win), offs=Object.entries(a.offences||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,7);
+  el.innerHTML=`<div class="card chartcard">${panelFilters('offence',{})}<h3>Top offence types</h3><p>Specific offences behind the pending challans.</p>${offs.length?'<div class="canvas-wrap tall"><canvas id="cv-off"></canvas></div>':'<div class="in" style="color:var(--muted);font-size:13px;padding:12px 0">No offence-level data in this window.</div>'}</div>`;
+  const cv=document.getElementById('cv-off'); if(!cv||!offs.length||typeof Chart==='undefined')return;
+  charts.offence=new Chart(cv,{type:'bar',data:{labels:offs.map(e=>e[0].length>44?e[0].slice(0,42)+'…':e[0]),datasets:[{data:offs.map(e=>e[1]),backgroundColor:offs.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:22}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>offs[c[0].dataIndex][0],label:c=>` ${nfmt(c.parsed.x)} challans`}}},scales:{x:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}},y:{grid:{display:false}}}}});
+};
+PANEL_RENDER.month=function(el,st){
+  const mm=monthlyFor(st.cam);
+  el.innerHTML=`<div class="card chartcard">${panelFilters('month',{win:false})}<h3>Month-on-month</h3><p>Scans vs violations by calendar month — grows each month.</p>${mm.length?'<div class="canvas-wrap"><canvas id="cv-month"></canvas></div>':'<div class="in" style="color:var(--muted);font-size:13px;padding:12px 0">No monthly data yet.</div>'}</div>`;
+  const cv=document.getElementById('cv-month'); if(!cv||!mm.length||typeof Chart==='undefined')return;
+  charts.month=new Chart(cv,{type:'bar',data:{labels:mm.map(r=>monthLabel(r.month)),datasets:[{label:'Vehicles scanned',data:mm.map(r=>r.scans),backgroundColor:'#4736FE',borderRadius:5,borderSkipped:false,maxBarThickness:46},{label:'Violations detected',data:mm.map(r=>r.violations),backgroundColor:'#63C6A8',borderRadius:5,borderSkipped:false,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${nfmt(c.parsed.y)}`}}},scales:{x:{grid:{display:false}},y:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}}}});
+};
+PANEL_RENDER.compare=function(el,st){
+  el.innerHTML=`<div class="card chartcard" style="padding-bottom:10px">${panelFilters('compare',{cam:false})}<h3>Bangalore vs Jaipur</h3><p>Full funnel side by side · <b>Combined</b> = network total.</p><div class="tscroll">${comparisonTableFor(st.win)}</div></div>
+    <div class="fnote">Scans / violations / interception / challans-detected are per-camera; <b>pending challan ₹ value &amp; count are system-wide</b> (API limit). Every card on this tab filters independently.</div>`;
+};
+function comparisonTableFor(win){
   const fd=fbData(), cams=fd.cameras||[];
-  const cw=cams.map(c=>{const w=((fd.data||{})[c.id]||{})[funnelWin]||{}, at=w.alertsByType||{};
+  const cw=cams.map(c=>{const w=((fd.data||{})[c.id]||{})[win]||{}, at=w.alertsByType||{};
     return {name:c.city,scans:w.scans||0,alerts:w.alerts||0,challans:at.CHALLAN_PENDING||0,puc:w.pucExpired||0,ins:at.INSURANCE_EXPIRED||0,intercepted:w.intercepted||0,missed:w.missed||0};});
   const comb={}; ['scans','alerts','challans','puc','ins','intercepted','missed'].forEach(k=>comb[k]=cw.reduce((a,r)=>a+r[k],0));
   const irate=o=>{const act=o.intercepted+o.missed;return act?Math.round(o.intercepted/act*1000)/10:0;};
@@ -840,48 +836,33 @@ function comparisonTable(){
   const body=spec.map(function(row){return '<tr><td class="mlabel">'+row[0]+'</td>'+cw.map(c=>`<td class="nowrap">${row[1](c)}</td>`).join('')+`<td class="nowrap mcomb">${row[1](comb)}</td></tr>`;}).join('');
   return `<table class="cmp"><thead>${head}</thead><tbody>${body}</tbody></table>`;
 }
-function buildFunnelCharts(a){
-  destroyCharts();
-  if(typeof Chart==='undefined')return;
-  Chart.defaults.font.family="'Geist',sans-serif";Chart.defaults.color='#6B6B86';
-  const open=Math.max(0,a.alerts-a.intercepted-a.missed);
-  charts.outcome=new Chart(document.getElementById('cOutcome'),{type:'doughnut',
-    data:{labels:['Intercepted','Missed','Open / awaiting'],datasets:[{data:[a.intercepted,a.missed,open],backgroundColor:['#15A66A','#FF4F01','#F59E0B'],borderColor:'#fff',borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${nfmt(c.parsed)} (${share(c.parsed,a.alerts)}%)`}}}}});
-  const tr=trendSeries();
-  if(document.getElementById('cTrend')&&tr.length){
-    charts.trend=new Chart(document.getElementById('cTrend'),{type:'line',
-      data:{labels:tr.map(p=>p.date.slice(5)),datasets:[{data:tr.map(p=>p.count),borderColor:'#4736FE',backgroundColor:'rgba(71,54,254,.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${nfmt(c.parsed.y)} detections`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}}}});
-  }
-  const vc=Object.entries(a.vClass||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,10);
-  if(document.getElementById('cClass')&&vc.length){
-    charts.cls=new Chart(document.getElementById('cClass'),{type:'bar',
-      data:{labels:vc.map(e=>prettyClass(e[0])),datasets:[{data:vc.map(e=>e[1]),backgroundColor:vc.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:22}]},
-      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${nfmt(c.parsed.x)} vehicles`}}},scales:{x:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}},y:{grid:{display:false}}}}});
-  }
-  if(document.getElementById('cIns')&&(a.ins.valid+a.ins.expired)>0){
-    charts.ins=new Chart(document.getElementById('cIns'),{type:'doughnut',
-      data:{labels:['Valid','Expired'],datasets:[{data:[a.ins.valid,a.ins.expired],backgroundColor:['#15A66A','#FF4F01'],borderColor:'#fff',borderWidth:2}]},
-      options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${nfmt(c.parsed)} (${share(c.parsed,a.ins.valid+a.ins.expired)}%)`}}}}});
-  }
-  const offs=Object.entries(a.offences||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,7);
-  if(document.getElementById('cOff')&&offs.length){
-    charts.off=new Chart(document.getElementById('cOff'),{type:'bar',
-      data:{labels:offs.map(e=>e[0].length>44?e[0].slice(0,42)+'…':e[0]),datasets:[{data:offs.map(e=>e[1]),backgroundColor:offs.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:22}]},
-      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>offs[c[0].dataIndex][0],label:c=>` ${nfmt(c.parsed.x)} challans`}}},scales:{x:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}},y:{grid:{display:false}}}}});
-  }
-  const mm=monthlyAgg();
-  if(document.getElementById('cMonth')&&mm.length){
-    charts.month=new Chart(document.getElementById('cMonth'),{type:'bar',
-      data:{labels:mm.map(r=>monthLabel(r.month)),datasets:[
-        {label:'Vehicles scanned',data:mm.map(r=>r.scans),backgroundColor:'#4736FE',borderRadius:5,borderSkipped:false,maxBarThickness:46},
-        {label:'Violations detected',data:mm.map(r=>r.violations),backgroundColor:'#63C6A8',borderRadius:5,borderSkipped:false,maxBarThickness:46}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${nfmt(c.parsed.y)}`}}},scales:{x:{grid:{display:false}},y:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}}}});
-  }
-}
 
+/* ---- panel dispatch: re-render just one panel + rebuild only its chart ---- */
+function renderPanel(id){
+  const el=document.getElementById('panel-'+id); if(!el) return;
+  if(charts[id]){ try{charts[id].destroy();}catch(e){} delete charts[id]; }
+  const fn=PANEL_RENDER[id]; if(fn){ fn(el,pstate(id)); countUpValues(el); }
+}
+const FUNNEL_PANELS=['overview','journey','outcome','trend','class','compliance','offence','month','compare'];
+
+function renderFunnel(){
+  const fd=fbData();
+  destroyCharts();
+  const asOf=fd.generatedAt?new Date(fd.generatedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+  document.getElementById('view').innerHTML=`
+    <section style="padding-bottom:10px">
+      <div class="fctrls"><span class="fasof"><span class="statusdot"></span>Live · SATARK · as of ${esc(asOf)}</span></div>
+      <p class="subc" style="margin-top:10px">Every chart and table below filters on its own — set a different <b>Location</b> or <b>Window</b> on each card to compare slices side by side.</p>
+    </section>
+    <section style="padding-top:6px"><div class="sectitle">Overview</div><div id="panel-overview" class="panel"></div></section>
+    <section><div class="sectitle">The journey — camera to challan</div><div id="panel-journey" class="panel"></div></section>
+    <section><div class="charts"><div class="row2"><div id="panel-outcome" class="panel"></div><div id="panel-trend" class="panel"></div></div></div></section>
+    <section><div class="sectitle">Vehicle &amp; document analysis</div><div class="charts"><div class="row2"><div id="panel-class" class="panel"></div><div id="panel-compliance" class="panel"></div></div></div></section>
+    <section><div class="sectitle">Offences</div><div id="panel-offence" class="panel"></div></section>
+    <section><div class="sectitle">Month-on-month</div><div id="panel-month" class="panel"></div></section>
+    <section><div class="sectitle">Camera comparison</div><div id="panel-compare" class="panel"></div></section>`;
+  FUNNEL_PANELS.forEach(renderPanel);
+}
 /* ===================== CHARTS ===================== */
 function destroyCharts(){Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});charts={};}
 function buildCharts(rows,prog){
