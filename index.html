@@ -228,45 +228,53 @@
     .jstep{min-width:0;flex:1 1 100%}
   }
 
-  /* ---------- CHALLAN FUNNEL ---------- */
-  .fctrls{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin:-6px 0 2px}
-  .fctrl{display:flex;align-items:center;gap:9px}
-  .seglabel{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
-  .seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--shadow)}
-  .seg button{border:none;background:transparent;font-family:inherit;font-weight:600;font-size:12.5px;color:var(--muted);padding:7px 14px;border-radius:999px;cursor:pointer;transition:.15s;white-space:nowrap}
+  /* ---------- CHALLAN FUNNEL — ANALYTICS ---------- */
+  .fctrls{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;margin:-6px 0 2px}
+  .fctrl{display:flex;align-items:center;gap:9px;min-width:0}
+  .seglabel{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;flex:0 0 auto}
+  .seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--shadow);max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .seg::-webkit-scrollbar{display:none}
+  .seg button{border:none;background:transparent;font-family:inherit;font-weight:600;font-size:12.5px;color:var(--muted);padding:7px 13px;border-radius:999px;cursor:pointer;transition:.15s;white-space:nowrap;flex:0 0 auto}
   .seg button:hover{color:var(--ink)}
   .seg button.on{background:var(--blue);color:#fff;box-shadow:0 3px 10px rgba(71,54,254,.26)}
-  .fasof{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600}
-  .funnelcard{padding:26px 28px}
-  .funnel{display:flex;flex-direction:column;gap:5px;margin-top:8px}
-  .fstage{display:grid;grid-template-columns:190px 1fr;gap:16px;align-items:center}
-  .fstage .fmeta .fname{font-weight:700;font-size:14px;letter-spacing:-.01em}
-  .fstage .fmeta .fsub{font-size:11.5px;color:var(--muted);margin-top:1px}
-  .ftrack{position:relative;height:48px;background:var(--bg);border-radius:12px;overflow:hidden}
-  .ffill{height:100%;border-radius:12px;display:flex;align-items:center;padding:0 15px;font-weight:800;font-size:15px;min-width:66px;width:0;animation:fgrow .85s cubic-bezier(.4,0,.2,1) forwards}
-  @keyframes fgrow{from{width:0}}
-  .fconv{padding:1px 0 1px 206px;font-size:11.5px;color:var(--muted);font-weight:600}
-  .fconv .arw{color:var(--orange);font-weight:900;margin-right:5px}
-  .outcome{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:4px}
-  .ocard{padding:16px 18px}
-  .ocard .on{font-size:25px;font-weight:800;letter-spacing:-.5px}
-  .ocard .ol{font-size:12.5px;color:var(--ink);margin-top:2px;font-weight:700}
-  .ocard .op{font-size:11.5px;color:var(--muted);margin-top:1px}
-  .odot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}
-  .vision{display:grid;grid-template-columns:repeat(3,1fr)}
-  .vstep{padding:16px 20px;text-align:center}
-  .vstep+.vstep{border-left:1px solid var(--line)}
-  .vstep .vv{font-size:26px;font-weight:800;color:var(--blue);letter-spacing:-.5px}
-  .vstep .vl{font-size:12px;color:var(--muted);margin-top:3px}
+  .fasof{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+  .statusdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#15A66A;margin-right:5px}
+  .fdelta{font-size:12px;font-weight:700;vertical-align:middle}
+  .fdelta.up{color:#15A66A}.fdelta.down{color:#FF4F01}
+
+  /* waterfall funnel — centered tapering stages */
+  .funnelcard{padding:24px 26px}
+  .wfunnel{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .wstage{min-width:120px;max-width:100%;height:58px;border-radius:12px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(20,20,60,.12);animation:fgrow .8s cubic-bezier(.4,0,.2,1) both}
+  @keyframes fgrow{from{transform:scaleX(.2);opacity:0}}
+  .wstage b{font-size:20px;font-weight:800;letter-spacing:-.3px;line-height:1}
+  .wstage span{font-size:11.5px;font-weight:600;opacity:.92;margin-top:3px}
+  .wconv{font-size:12px;color:var(--muted);font-weight:600}
+  .wconv .arw{color:var(--orange);font-weight:900;margin-right:4px}
+  .reasons{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:22px;border-top:1px solid var(--line);padding-top:20px}
+  .rchip{text-align:center}
+  .rchip .rv{font-size:20px;font-weight:800;color:var(--blued);letter-spacing:-.3px}
+  .rchip .rl{font-size:12px;font-weight:600;margin-top:2px}
+  .rchip .rp{font-size:11px;color:var(--muted);margin-top:1px}
+
+  /* compliance */
+  .complrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
+  .compl{text-align:center}
+  .compl .cv{font-size:20px;font-weight:800;letter-spacing:-.3px}
+  .compl .cl{font-size:11.5px;color:var(--muted);margin-top:2px;font-weight:600}
+
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .fnote{font-size:12px;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin-top:16px;line-height:1.5}
   .fnote b{color:var(--blued)}
-  .statusdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#15A66A;margin-right:5px}
+  /* mobile-overflow guards: let grid/flex children shrink below content */
+  .charts,.row2,.chartcard,.kpi .card,.tablecard{min-width:0}
+  .row2>*{min-width:0}
   @media(max-width:640px){
-    .fstage{grid-template-columns:1fr;gap:5px}
-    .fconv{padding-left:2px}
-    .outcome,.vision{grid-template-columns:1fr}
-    .vstep+.vstep{border-left:none;border-top:1px solid var(--line)}
+    .funnelcard{padding:20px 16px}
     .fasof{margin-left:0;flex-basis:100%}
+    .reasons{grid-template-columns:1fr 1fr}
+    .complrow{grid-template-columns:1fr 1fr 1fr}
+    .wstage b{font-size:18px}
   }
 </style>
 </head>
@@ -307,7 +315,7 @@ const STORY_KEY = '__story__', OTHER_KEY = '__other__', FUNNEL_KEY = '__funnel__
 
 /* Embedded fallback for the Challan Funnel tab (live data comes from data.json → funnel,
    pulled server-side from the SATARK ANPR API). Numbers as reported by SATARK on 08 Jul 2026. */
-const FUNNEL_SNAPSHOT = {"generatedAt":"2026-07-08T16:20:00Z","systemPendingChallanValue":300907021,"vision":{"framesFetched":1134,"vehiclesDetected":1134,"platesRead":294},"cameras":[{"id":"BLR-TRINITY-01","name":"MG Road – Trinity Circle","city":"Bangalore","status":"ONLINE","windows":{"all":{"scanned":30587,"violations":21934,"intercepted":0,"missed":21933,"pending":1,"rate":0,"byType":{"Inter-state Challan":1721,"PUC Expired":11675,"Fitness Expired":1358,"Vehicle-type Mismatch":600,"Repeat Offender":2479,"Blacklisted":740,"RC Expired":133,"Insurance Expired":1780,"Overage Vehicle":1310,"Challan Pending":138}},"d30":{"scanned":30587,"violations":21934,"intercepted":0,"missed":21933,"pending":1,"rate":0,"byType":{"Inter-state Challan":1721,"PUC Expired":11675,"Fitness Expired":1358,"Vehicle-type Mismatch":600,"Repeat Offender":2479,"Blacklisted":740,"RC Expired":133,"Insurance Expired":1780,"Overage Vehicle":1310,"Challan Pending":138}}}},{"id":"JPR-RAMBAGH-01","name":"Rambagh Circle ANPR Cam","city":"Jaipur","status":"ONLINE","windows":{"all":{"scanned":275047,"violations":66201,"intercepted":299,"missed":14883,"pending":1,"rate":2.0,"byType":{"Inter-state Challan":1517,"Triple Riding":3,"PUC Expired":20794,"Stolen":2,"FIR Recorded":22,"Theft History":2,"Fitness Expired":159,"Accident Prone":2,"Vehicle-type Mismatch":24,"Phone Use":5,"Vehicle Defect":93,"Repeat Offender":96,"Blacklisted":50,"RC Expired":47,"Plate Tampering":13,"Insurance Expired":13373,"Plate Mismatch":53,"No Seatbelt":74,"Overage Vehicle":902,"Challan Pending":28951,"Court Case Pending":1,"No Helmet":18}},"d30":{"scanned":177941,"violations":10846,"intercepted":242,"missed":10603,"pending":1,"rate":2.2,"byType":{"Inter-state Challan":936,"PUC Expired":1,"Stolen":1,"FIR Recorded":6,"Theft History":2,"Fitness Expired":106,"Vehicle-type Mismatch":24,"Blacklisted":14,"RC Expired":29,"Insurance Expired":41,"Overage Vehicle":595,"Challan Pending":9090,"Court Case Pending":1}}}}]};
+const FUNNEL_SNAPSHOT = {"generatedAt":"2026-07-14T09:40:00.000Z","cameras":[{"id":"BLR-TRINITY-01","name":"MG Road – Trinity Circle","city":"Bangalore","status":"ONLINE"},{"id":"JPR-RAMBAGH-01","name":"Rambagh Circle ANPR Cam","city":"Jaipur","status":"ONLINE"}],"windows":["24h","3d","7d","30d","all"],"data":{"BLR-TRINITY-01":{"24h":{"scans":533,"alerts":391,"intercepted":0,"missed":382,"interceptionRate":0.0,"avgResponseMin":null,"pendingAmount":0,"pendingCount":0,"paidCount":0,"alertsByType":{"BLACKLIST":9,"FITNESS_EXPIRED":21,"INSURANCE_EXPIRED":30,"INTER_STATE_CHALLAN":16,"OVERAGE_VEHICLE":23,"PUC_EXPIRED":208,"REPEAT_OFFENDER":76,"VEHICLE_TYPE_MISMATCH":8},"offences":[],"vehicleClass":[{"label":"SUV","count":178},{"label":"SaloonCar","count":162},{"label":"VanTricycle","count":59},{"label":"MicroTruck","count":28},{"label":"Electricbike","count":25},{"label":"Pickup","count":15},{"label":"MidTruck","count":11},{"label":"PassengerCar","count":5},{"label":"MidPassengerCar","count":2},{"label":"LargeTruck","count":1}],"docCompliance":[{"type":"insurance","valid":480,"expired":37,"unknown":0}],"prev":{"scans":1768,"alerts":1300,"intercepted":0,"pendingAmount":0},"pucExpired":208},"3d":{"scans":3863,"alerts":2758,"intercepted":0,"missed":2749,"interceptionRate":0.0,"avgResponseMin":null,"pendingAmount":14200.0,"pendingCount":5,"paidCount":0,"alertsByType":{"INTER_STATE_CHALLAN":97,"PUC_EXPIRED":1413,"FITNESS_EXPIRED":189,"VEHICLE_TYPE_MISMATCH":95,"REPEAT_OFFENDER":334,"BLACKLIST":98,"RC_EXPIRED":17,"INSURANCE_EXPIRED":294,"OVERAGE_VEHICLE":214,"CHALLAN_PENDING":7},"offences":[{"label":"Driving Dangerously (jumping a red light) 184(a)","count":2},{"label":"Disobedience of any direction or obstruction of any …","count":1},{"label":"Driving at excess speed (LMV) 183(1)(i)","count":1},{"label":"Driving without having valid/effective license (181)","count":1}],"vehicleClass":[{"label":"SaloonCar","count":1272},{"label":"SUV","count":1264},{"label":"VanTricycle","count":450},{"label":"MicroTruck","count":137},{"label":"Pickup","count":79},{"label":"MidTruck","count":38},{"label":"PassengerCar","count":30},{"label":"LargeTruck","count":20},{"label":"MidPassengerCar","count":9},{"label":"NoMannedConvertibleTricycle","count":8}],"docCompliance":[{"type":"insurance","valid":3343,"expired":335,"unknown":0}],"prev":{"scans":3015,"alerts":2128,"intercepted":0,"pendingAmount":0},"pucExpired":1413},"7d":{"scans":7749,"alerts":5473,"intercepted":0,"missed":5464,"interceptionRate":0.0,"avgResponseMin":null,"pendingAmount":76500.0,"pendingCount":44,"paidCount":0,"alertsByType":{"INTER_STATE_CHALLAN":273,"PUC_EXPIRED":2779,"FITNESS_EXPIRED":347,"VEHICLE_TYPE_MISMATCH":171,"REPEAT_OFFENDER":719,"BLACKLIST":180,"RC_EXPIRED":35,"INSURANCE_EXPIRED":528,"OVERAGE_VEHICLE":421,"CHALLAN_PENDING":20},"offences":[{"label":"Driving at excess speed (LMV) 183(1)(i)","count":6},{"label":"parking in no parking zone (other than 2W/e-rick/3W)","count":4},{"label":"Riding without Helmet by driver or rider 194D/129 (","count":3},{"label":"Driver or passenger without seat belt 194B(1)","count":2},{"label":"Driving Dangerously (driving against authorised flow…","count":2},{"label":"Driving without having valid/effective license (181)","count":2}],"vehicleClass":[{"label":"SaloonCar","count":2696},{"label":"SUV","count":2627},{"label":"VanTricycle","count":690},{"label":"MicroTruck","count":296},{"label":"Pickup","count":162},{"label":"MidTruck","count":92},{"label":"PassengerCar","count":52},{"label":"LargeTruck","count":39},{"label":"MidPassengerCar","count":16},{"label":"NoMannedConvertibleTricycle","count":16}],"docCompliance":[{"type":"insurance","valid":6764,"expired":632,"unknown":0}],"prev":{"scans":8165,"alerts":5639,"intercepted":0,"pendingAmount":0},"pucExpired":2779},"30d":{"scans":37627,"alerts":26899,"intercepted":0,"missed":26890,"interceptionRate":0.0,"avgResponseMin":null,"pendingAmount":3734410.0,"pendingCount":1998,"paidCount":10,"alertsByType":{"INTER_STATE_CHALLAN":1960,"PUC_EXPIRED":14183,"FITNESS_EXPIRED":1683,"VEHICLE_TYPE_MISMATCH":756,"REPEAT_OFFENDER":3120,"BLACKLIST":907,"RC_EXPIRED":164,"INSURANCE_EXPIRED":2277,"OVERAGE_VEHICLE":1692,"CHALLAN_PENDING":157},"offences":[{"label":"Driving at excess speed (LMV) 183(1)(i)","count":335},{"label":"parking in no parking zone (other than 2W/e-rick/3W)","count":124},{"label":"Driving Dangerously (jumping a red light) 184(a)","count":84},{"label":"Using Vehicle without valid PUCC (LMV Transport Vehi…","count":79},{"label":"Black film/Non compliance of visual transmission of …","count":68}],"vehicleClass":[{"label":"SaloonCar","count":12610},{"label":"SUV","count":12132},{"label":"VanTricycle","count":3464},{"label":"MicroTruck","count":1644},{"label":"Pickup","count":851},{"label":"MidTruck","count":477},{"label":"Motorcycle","count":359},{"label":"MidPassengerCar","count":127},{"label":"NoMannedConvertibleTricycle","count":89},{"label":"MannedConvertibleTricycle","count":4}],"docCompliance":[{"type":"insurance","valid":32616,"expired":3717,"unknown":1}],"prev":{"scans":0,"alerts":0,"intercepted":0,"pendingAmount":0},"pucExpired":14183},"all":{"scans":37627,"alerts":26899,"intercepted":0,"missed":26890,"interceptionRate":0.0,"avgResponseMin":null,"pendingAmount":314008534.0,"pendingCount":211009,"paidCount":3036,"alertsByType":{"INTER_STATE_CHALLAN":1960,"PUC_EXPIRED":14183,"FITNESS_EXPIRED":1683,"VEHICLE_TYPE_MISMATCH":756,"REPEAT_OFFENDER":3120,"BLACKLIST":907,"RC_EXPIRED":164,"INSURANCE_EXPIRED":2277,"OVERAGE_VEHICLE":1692,"CHALLAN_PENDING":157},"offences":[{"label":"Driving at excess speed (LMV) 183(1)(i)","count":82804},{"label":"parking in no parking zone (other than 2W/e-rick/3W)","count":15962},{"label":"parking in no parking zone (2W/e-rick/3W)","count":6449},{"label":"Driving Dangerously (violating a stop sign) 184(b)","count":6246},{"label":"Using Vehicle without valid PUCC (LMV Transport Vehi…","count":4921},{"label":"28. Driving fast/slower than speed limits","count":4629}],"vehicleClass":[{"label":"SaloonCar","count":12610},{"label":"SUV","count":12132},{"label":"VanTricycle","count":3464},{"label":"MicroTruck","count":1644},{"label":"Pickup","count":851},{"label":"MidTruck","count":477},{"label":"Motorcycle","count":359},{"label":"MidPassengerCar","count":127},{"label":"NoMannedConvertibleTricycle","count":89},{"label":"MannedConvertibleTricycle","count":4}],"docCompliance":[{"type":"insurance","valid":32616,"expired":3717,"unknown":1}],"prev":{"scans":0,"alerts":0,"intercepted":0,"pendingAmount":0},"pucExpired":14183}},"JPR-RAMBAGH-01":{"24h":{"scans":1696,"alerts":79,"intercepted":4,"missed":75,"interceptionRate":5.1,"avgResponseMin":2,"pendingAmount":0,"pendingCount":0,"paidCount":0,"alertsByType":{"CHALLAN_PENDING":79},"offences":[],"vehicleClass":[{"label":"SUV","count":578},{"label":"Motorcycle","count":337},{"label":"SaloonCar","count":310},{"label":"VanTricycle","count":184},{"label":"MicroTruck","count":20},{"label":"NoMannedConvertibleTricycle","count":8},{"label":"MidPassengerCar","count":3},{"label":"MidTruck","count":3},{"label":"Pickup","count":3},{"label":"MannedConvertibleTricycle","count":1}],"docCompliance":[{"type":"insurance","valid":1433,"expired":234,"unknown":13}],"prev":{"scans":5466,"alerts":288,"intercepted":11,"pendingAmount":0},"pucExpired":0},"3d":{"scans":11078,"alerts":578,"intercepted":20,"missed":558,"interceptionRate":3.5,"avgResponseMin":3,"pendingAmount":14200.0,"pendingCount":5,"paidCount":0,"alertsByType":{"CHALLAN_PENDING":578},"offences":[{"label":"Driving Dangerously (jumping a red light) 184(a)","count":2},{"label":"Disobedience of any direction or obstruction of any …","count":1},{"label":"Driving at excess speed (LMV) 183(1)(i)","count":1},{"label":"Driving without having valid/effective license (181)","count":1}],"vehicleClass":[{"label":"SUV","count":4160},{"label":"SaloonCar","count":2380},{"label":"Motorcycle","count":1938},{"label":"VanTricycle","count":962},{"label":"MicroTruck","count":187},{"label":"NoMannedConvertibleTricycle","count":42},{"label":"MidTruck","count":35},{"label":"MidPassengerCar","count":17},{"label":"Pickup","count":13},{"label":"MannedConvertibleTricycle","count":1}],"docCompliance":[{"type":"insurance","valid":9462,"expired":1400,"unknown":68}],"prev":{"scans":13395,"alerts":908,"intercepted":33,"pendingAmount":0},"pucExpired":0},"7d":{"scans":28534,"alerts":1703,"intercepted":63,"missed":1640,"interceptionRate":3.7,"avgResponseMin":3,"pendingAmount":76500.0,"pendingCount":44,"paidCount":0,"alertsByType":{"CHALLAN_PENDING":1703},"offences":[{"label":"Driving at excess speed (LMV) 183(1)(i)","count":6},{"label":"parking in no parking zone (other than 2W/e-rick/3W)","count":4},{"label":"Riding without Helmet by driver or rider 194D/129 (","count":3},{"label":"Driver or passenger without seat belt 194B(1)","count":2},{"label":"Driving Dangerously (driving against authorised flow…","count":2},{"label":"Driving without having valid/effective license (181)","count":2}],"vehicleClass":[{"label":"SUV","count":11536},{"label":"SaloonCar","count":6620},{"label":"Motorcycle","count":3945},{"label":"VanTricycle","count":2319},{"label":"MicroTruck","count":522},{"label":"NoMannedConvertibleTricycle","count":96},{"label":"MidTruck","count":86},{"label":"MidPassengerCar","count":37},{"label":"Pickup","count":36},{"label":"MannedConvertibleTricycle","count":3}],"docCompliance":[{"type":"insurance","valid":24392,"expired":3627,"unknown":189}],"prev":{"scans":33243,"alerts":2046,"intercepted":66,"pendingAmount":0},"pucExpired":0},"30d":{"scans":155352,"alerts":8742,"intercepted":253,"missed":8489,"interceptionRate":2.9,"avgResponseMin":4,"pendingAmount":3734410.0,"pendingCount":1998,"paidCount":10,"alertsByType":{"PUC_EXPIRED":1,"VEHICLE_TYPE_MISMATCH":24,"CHALLAN_PENDING":8717},"offences":[{"label":"Driving at excess speed (LMV) 183(1)(i)","count":335},{"label":"parking in no parking zone (other than 2W/e-rick/3W)","count":124},{"label":"Driving Dangerously (jumping a red light) 184(a)","count":84},{"label":"Using Vehicle without valid PUCC (LMV Transport Vehi…","count":79},{"label":"Black film/Non compliance of visual transmission of …","count":68}],"vehicleClass":[{"label":"Motorcycle","count":16477},{"label":"Electricbike","count":11749},{"label":"MicroTruck","count":3079},{"label":"MPV","count":3070},{"label":"Microbus","count":1378},{"label":"MidTruck","count":488},{"label":"MidPassengerCar","count":214},{"label":"LargeTruck","count":130},{"label":"MannedConvertibleTricycle","count":15},{"label":"Bicycle","count":3}],"docCompliance":[{"type":"insurance","valid":133398,"expired":19335,"unknown":851}],"prev":{"scans":144705,"alerts":59005,"intercepted":99,"pendingAmount":0},"pucExpired":1},"all":{"scans":300057,"alerts":67747,"intercepted":352,"missed":16377,"interceptionRate":2.1,"avgResponseMin":25,"pendingAmount":314008534.0,"pendingCount":211009,"paidCount":3036,"alertsByType":{"INTER_STATE_CHALLAN":1517,"TRIPLE_RIDING":3,"PUC_EXPIRED":20794,"STOLEN":2,"FIR_RECORDED":22,"THEFT_HISTORY":2,"FITNESS_EXPIRED":159,"ACCIDENT_PRONE":2,"VEHICLE_TYPE_MISMATCH":24,"PHONE_USE":5,"VEHICLE_DEFECT":93,"REPEAT_OFFENDER":96,"BLACKLIST":50,"RC_EXPIRED":47,"PLATE_TAMPERING":13,"INSURANCE_EXPIRED":13373,"MISMATCH":53,"NO_SEATBELT":74,"OVERAGE_VEHICLE":902,"CHALLAN_PENDING":30497,"COURT_CASE_PENDING":1,"NO_HELMET":18},"offences":[{"label":"Driving at excess speed (LMV) 183(1)(i)","count":82804},{"label":"parking in no parking zone (other than 2W/e-rick/3W)","count":15962},{"label":"parking in no parking zone (2W/e-rick/3W)","count":6449},{"label":"Driving Dangerously (violating a stop sign) 184(b)","count":6246},{"label":"Using Vehicle without valid PUCC (LMV Transport Vehi…","count":4921},{"label":"28. Driving fast/slower than speed limits","count":4629}],"vehicleClass":[{"label":"Electricbike","count":20854},{"label":"HATCHBACK","count":1864},{"label":"AUTO_RICKSHAW","count":722},{"label":"CAR","count":473},{"label":"LargeTruck","count":232},{"label":"BUS","count":50},{"label":"LGV","count":32},{"label":"Bicycle","count":8},{"label":"LMV","count":2},{"label":"LPV","count":1}],"docCompliance":[{"type":"insurance","valid":242760,"expired":46104,"unknown":1730}],"prev":{"scans":0,"alerts":0,"intercepted":0,"pendingAmount":0},"pucExpired":20794}}},"trends":{"BLR-TRINITY-01":[{"date":"2026-06-17","count":73},{"date":"2026-06-18","count":3},{"date":"2026-06-19","count":46},{"date":"2026-06-20","count":197},{"date":"2026-06-21","count":163},{"date":"2026-06-22","count":750},{"date":"2026-06-23","count":2405},{"date":"2026-06-24","count":2676},{"date":"2026-06-25","count":1952},{"date":"2026-06-26","count":1681},{"date":"2026-06-27","count":964},{"date":"2026-06-28","count":2182},{"date":"2026-06-29","count":1607},{"date":"2026-06-30","count":1058},{"date":"2026-07-01","count":1135},{"date":"2026-07-02","count":671},{"date":"2026-07-03","count":903},{"date":"2026-07-04","count":414},{"date":"2026-07-05","count":1044},{"date":"2026-07-06","count":892},{"date":"2026-07-07","count":561},{"date":"2026-07-08","count":568},{"date":"2026-07-09","count":564},{"date":"2026-07-10","count":311},{"date":"2026-07-11","count":1187},{"date":"2026-07-12","count":1072},{"date":"2026-07-13","count":1392},{"date":"2026-07-14","count":428}],"JPR-RAMBAGH-01":[{"date":"2026-06-15","count":163},{"date":"2026-06-16","count":267},{"date":"2026-06-17","count":292},{"date":"2026-06-18","count":310},{"date":"2026-06-19","count":329},{"date":"2026-06-20","count":343},{"date":"2026-06-21","count":279},{"date":"2026-06-22","count":186},{"date":"2026-06-23","count":298},{"date":"2026-06-24","count":180},{"date":"2026-06-25","count":130},{"date":"2026-06-26","count":401},{"date":"2026-06-27","count":505},{"date":"2026-06-28","count":501},{"date":"2026-06-29","count":300},{"date":"2026-06-30","count":450},{"date":"2026-07-01","count":407},{"date":"2026-07-02","count":354},{"date":"2026-07-03","count":300},{"date":"2026-07-04","count":189},{"date":"2026-07-05","count":385},{"date":"2026-07-06","count":220},{"date":"2026-07-07","count":218},{"date":"2026-07-08","count":213},{"date":"2026-07-09","count":252},{"date":"2026-07-10","count":271},{"date":"2026-07-11","count":339},{"date":"2026-07-12","count":235},{"date":"2026-07-13","count":316},{"date":"2026-07-14","count":109}]}};
 const TAB_META = {
   'Challan Billboard':{
     eyebrow:'🚦 Project Protect · Challan Billboards',
@@ -664,109 +672,146 @@ function renderStory(){
     </div>`;
 }
 
-/* ===================== CHALLAN FUNNEL ===================== */
-let funnelCam='ALL', funnelWin='all';
-function funnelData(){return (DOC&&DOC.funnel&&DOC.funnel.cameras)?DOC.funnel:FUNNEL_SNAPSHOT;}
+/* ===================== CHALLAN FUNNEL — ANALYTICS ===================== */
+let funnelCam='ALL', funnelWin='30d';
+function fbData(){return (DOC&&DOC.funnel&&DOC.funnel.data)?DOC.funnel:FUNNEL_SNAPSHOT;}
 const nfmt=n=>Number(n||0).toLocaleString('en-IN');
-function crfmt(n){n=Number(n||0);return n>=1e7?'₹'+(n/1e7).toFixed(2)+' Cr':n>=1e5?'₹'+(n/1e5).toFixed(2)+' L':'₹'+nfmt(n);}
+function crfmt(n){n=Number(n||0);return n>=1e7?'₹'+(n/1e7).toFixed(2)+' Cr':n>=1e5?'₹'+(n/1e5).toFixed(2)+' L':n>=1e3?'₹'+(n/1e3).toFixed(1)+'K':'₹'+nfmt(n);}
 const share=(a,b)=>b?Math.round(a/b*1000)/10:0;
+const WIN_LABEL={'24h':'Last 24 hours','3d':'Last 3 days','7d':'Last 7 days','30d':'Last 30 days','all':'All-time'};
+const WIN_DAYS={'24h':1,'3d':3,'7d':7,'30d':30,'all':9999};
+const VLABEL={PUC_EXPIRED:'PUC expired',INSURANCE_EXPIRED:'Insurance expired',CHALLAN_PENDING:'Challan pending',REPEAT_OFFENDER:'Repeat offender',INTER_STATE_CHALLAN:'Inter-state challan',FITNESS_EXPIRED:'Fitness expired',OVERAGE_VEHICLE:'Overage vehicle',BLACKLIST:'Blacklisted',VEHICLE_TYPE_MISMATCH:'Type mismatch',RC_EXPIRED:'RC expired',NO_SEATBELT:'No seatbelt',NO_HELMET:'No helmet',PHONE_USE:'Phone use',TRIPLE_RIDING:'Triple riding',STOLEN:'Stolen',THEFT_HISTORY:'Theft history',FIR_RECORDED:'FIR recorded',PLATE_TAMPERING:'Plate tampering',VEHICLE_DEFECT:'Vehicle defect',ACCIDENT_PRONE:'Accident prone',MISMATCH:'Plate mismatch',COURT_CASE_PENDING:'Court case'};
+const vlabel=k=>VLABEL[k]||String(k).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+const prettyClass=s=>String(s).replace(/_/g,' ').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,c=>c.toUpperCase());
 function fnSet(kind,val){if(kind==='cam')funnelCam=val;else funnelWin=val;renderFunnel();countUpValues();}
 window.fnSet=fnSet;
+
 function funnelAgg(){
-  const fd=funnelData(),cams=fd.cameras||[];
-  const sel=funnelCam==='ALL'?cams:cams.filter(c=>c.id===funnelCam);
-  const a={scanned:0,violations:0,intercepted:0,missed:0,pending:0,byType:{}};
-  sel.forEach(c=>{const w=(c.windows||{})[funnelWin]||{};
-    a.scanned+=w.scanned||0;a.violations+=w.violations||0;a.intercepted+=w.intercepted||0;a.missed+=w.missed||0;a.pending+=w.pending||0;
-    Object.entries(w.byType||{}).forEach(([k,v])=>{a.byType[k]=(a.byType[k]||0)+v;});});
-  a.open=Math.max(0,a.violations-a.intercepted-a.missed);
-  a.actioned=a.intercepted+a.missed;
-  a.rate=a.actioned?Math.round(a.intercepted/a.actioned*1000)/10:0;
-  return a;
+  const fd=fbData(), cams=fd.cameras||[];
+  const sel=funnelCam==='ALL'?cams.map(c=>c.id):[funnelCam];
+  const A={scans:0,alerts:0,intercepted:0,missed:0,pucExpired:0,pendingAmount:0,pendingCount:0,paidCount:0,
+    byType:{},vClass:{},offences:{},ins:{valid:0,expired:0,unknown:0},prev:{scans:0,alerts:0,intercepted:0},resp:[]};
+  sel.forEach(id=>{
+    const x=((fd.data||{})[id]||{})[funnelWin]; if(!x) return;
+    A.scans+=x.scans||0; A.alerts+=x.alerts||0; A.intercepted+=x.intercepted||0; A.missed+=x.missed||0; A.pucExpired+=x.pucExpired||0;
+    A.pendingAmount=Math.max(A.pendingAmount,x.pendingAmount||0);   // pending ₹/count are system-wide → represent, don't sum
+    A.pendingCount=Math.max(A.pendingCount,x.pendingCount||0); A.paidCount=Math.max(A.paidCount,x.paidCount||0);
+    Object.entries(x.alertsByType||{}).forEach(([k,v])=>A.byType[k]=(A.byType[k]||0)+v);
+    (x.vehicleClass||[]).forEach(b=>A.vClass[b.label]=(A.vClass[b.label]||0)+b.count);
+    (x.offences||[]).forEach(o=>A.offences[o.label]=(A.offences[o.label]||0)+o.count);
+    (x.docCompliance||[]).forEach(d=>{if(d.type==='insurance'){A.ins.valid+=d.valid||0;A.ins.expired+=d.expired||0;A.ins.unknown+=d.unknown||0;}});
+    if(x.avgResponseMin!=null) A.resp.push(x.avgResponseMin);
+    const p=x.prev||{}; A.prev.scans+=p.scans||0; A.prev.alerts+=p.alerts||0; A.prev.intercepted+=p.intercepted||0;
+  });
+  A.actioned=A.intercepted+A.missed;
+  A.rate=A.actioned?Math.round(A.intercepted/A.actioned*1000)/10:0;
+  A.flagRate=share(A.alerts,A.scans);
+  A.avgResponseMin=A.resp.length?Math.round(A.resp.reduce((a,b)=>a+b,0)/A.resp.length):null;
+  return A;
+}
+function trendSeries(){
+  const fd=fbData(), sel=funnelCam==='ALL'?(fd.cameras||[]).map(c=>c.id):[funnelCam];
+  const m={}; sel.forEach(id=>((fd.trends||{})[id]||[]).forEach(p=>m[p.date]=(m[p.date]||0)+p.count));
+  let arr=Object.keys(m).sort().map(d=>({date:d,count:m[d]}));
+  const days=WIN_DAYS[funnelWin]; if(days<9999) arr=arr.slice(-days);
+  return arr;
 }
 function seg(kind,cur,opts){return `<div class="seg">${opts.map(o=>`<button type="button" class="${o[0]===cur?'on':''}" onclick="fnSet('${kind}','${o[0]}')">${esc(o[1])}</button>`).join('')}</div>`;}
-function funnelStageRow(name,sub,val,w,bg,fg){
-  return `<div class="fstage"><div class="fmeta"><div class="fname">${esc(name)}</div><div class="fsub">${sub}</div></div>
-    <div class="ftrack"><div class="ffill" style="width:${Math.max(w,val>0?4:0)}%;background:${bg};color:${fg}">${nfmt(val)}</div></div></div>`;
-}
+function fdelta(cur,prev){if(!prev)return '';const d=Math.round((cur-prev)/prev*1000)/10;const up=d>=0;return ` <span class="fdelta ${up?'up':'down'}">${up?'▲':'▼'}${Math.abs(d)}%</span>`;}
+/* KPI card that renders only when it carries signal (drops zero/empty metrics) */
+function kpiIf(cond,label,value,meta,accent){return cond?`<div class="card"><div class="label">${label}</div><div class="value${accent?' accent':''}">${value}</div><div class="meta">${meta}</div></div>`:'';}
+
 function renderFunnel(){
-  const fd=funnelData(), a=funnelAgg();
-  const flagPct=share(a.violations,a.scanned), intPct=share(a.intercepted,a.violations);
-  const camOpts=[['ALL','All cameras']].concat((fd.cameras||[]).map(c=>[c.id,c.city]));
+  const fd=fbData(), a=funnelAgg();
+  const camOpts=[['ALL','All']].concat((fd.cameras||[]).map(c=>[c.id,c.city]));
+  const winOpts=[['24h','24h'],['3d','3d'],['7d','7d'],['30d','30d'],['all','All']];
   const asOf=fd.generatedAt?new Date(fd.generatedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
-  const camName=funnelCam==='ALL'?'both cameras':((fd.cameras||[]).find(c=>c.id===funnelCam)||{}).name||funnelCam;
-  const winName=funnelWin==='all'?'all-time':'last 30 days';
+  const scope=funnelCam==='ALL'?'all cameras':((fd.cameras||[]).find(c=>c.id===funnelCam)||{}).name||funnelCam;
+  const winName=WIN_LABEL[funnelWin]||funnelWin;
+  const wS=Math.max(a.flagRate,a.alerts>0?5:0), wI=Math.max(share(a.intercepted,a.scans),a.intercepted>0?2:0);
+  // top violation reasons (drop zeros), pretty-labelled
+  const reasons=Object.entries(a.byType||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,6);
+  const offs=Object.entries(a.offences||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,7);
+  const insTotal=a.ins.valid+a.ins.expired;
   document.getElementById('view').innerHTML=`
     <section>
       <div class="fctrls">
-        <div class="fctrl"><span class="seglabel">Camera</span>${seg('cam',funnelCam,camOpts)}</div>
-        <div class="fctrl"><span class="seglabel">Window</span>${seg('win',funnelWin,[['all','All-time'],['d30','Last 30 days']])}</div>
-        <span class="fasof"><span class="statusdot"></span>Live · SATARK · as of ${esc(asOf)}</span>
+        <div class="fctrl"><span class="seglabel">Location</span>${seg('cam',funnelCam,camOpts)}</div>
+        <div class="fctrl"><span class="seglabel">Window</span>${seg('win',funnelWin,winOpts)}</div>
+        <span class="fasof"><span class="statusdot"></span>SATARK · ${esc(scope)} · as of ${esc(asOf)}</span>
       </div>
     </section>
+
     <section style="padding-top:8px">
+      <div class="sectitle">Overview · ${esc(winName)}</div>
       <div class="kpi">
-        ${kpi('Vehicles scanned',nfmt(a.scanned),'plates read by ANPR')}
-        ${kpiAccent('Violations detected',nfmt(a.violations),flagPct+'% of scanned flagged')}
-        ${kpi('Intercepted',nfmt(a.intercepted),a.rate+'% interception rate')}
-        ${kpi('Missed',nfmt(a.missed),'flagged but not acted on')}
+        ${kpiIf(true,'Vehicles scanned',nfmt(a.scans)+fdelta(a.scans,a.prev.scans),'number plates read by ANPR')}
+        ${kpiIf(true,'Violations detected',nfmt(a.alerts)+fdelta(a.alerts,a.prev.alerts),a.flagRate+'% of scanned carried a flag',true)}
+        ${kpiIf(a.actioned>0,'Interception rate',a.rate+'%',nfmt(a.intercepted)+' of '+nfmt(a.actioned)+' acted-on intercepted')}
+        ${kpiIf(a.avgResponseMin!=null,'Avg response time',a.avgResponseMin+' min','from alert to interception')}
+        ${kpiIf(a.pendingAmount>0,'Pending challan value',crfmt(a.pendingAmount),'system-wide, this window')}
+        ${kpiIf(a.pendingCount>0,'Pending challans',nfmt(a.pendingCount),nfmt(a.paidCount)+' paid in window')}
       </div>
     </section>
+
     <section>
-      <div class="sectitle">The funnel — ${esc(camName)} · ${esc(winName)}</div>
-      <p class="subc" style="margin:-8px 0 16px">From every vehicle the camera scans, down to the few that enforcement actually acts on. The width of each bar is its share of vehicles scanned.</p>
+      <div class="sectitle">The journey — camera to challan</div>
+      <p class="subc" style="margin:-8px 0 16px">Every vehicle scanned, narrowing down to the ones carrying a violation and the few enforcement acts on. Bar width = share of vehicles scanned.</p>
       <div class="card funnelcard">
-        <div class="funnel">
-          ${funnelStageRow('Vehicles scanned','ANPR captured the number plate',a.scanned,100,'linear-gradient(90deg,#4736FE,#6C5CFF)','#fff')}
-          <div class="fconv"><span class="arw">↓</span>${flagPct}% carried a violation on record</div>
-          ${funnelStageRow('Violations detected','Pending challan, PUC, insurance, blacklist…',a.violations,flagPct,'linear-gradient(90deg,#2B2098,#5B4BD6)','#fff')}
-          <div class="fconv"><span class="arw">↓</span>${intPct}% of flagged vehicles were intercepted</div>
-          ${funnelStageRow('Intercepted by police','Acted on via the Vehicle Alert app',a.intercepted,intPct,'linear-gradient(90deg,#15A66A,#63FFB1)','#04331f')}
+        <div class="wfunnel">
+          <div class="wstage" style="width:100%;background:linear-gradient(90deg,#4736FE,#6C5CFF)"><b>${nfmt(a.scans)}</b><span>Vehicles scanned</span></div>
+          <div class="wconv"><span class="arw">▼</span> ${a.flagRate}% carried a violation on record</div>
+          <div class="wstage" style="width:${Math.max(wS,8)}%;background:linear-gradient(90deg,#2B2098,#5B4BD6)"><b>${nfmt(a.alerts)}</b><span>Violations detected</span></div>
+          <div class="wconv"><span class="arw">▼</span> ${share(a.intercepted,a.alerts)}% of flagged vehicles intercepted</div>
+          <div class="wstage" style="width:${Math.max(wI,8)}%;background:linear-gradient(90deg,#15A66A,#63FFB1);color:#04331f"><b>${nfmt(a.intercepted)}</b><span>Intercepted by police</span></div>
         </div>
+        ${reasons.length?`<div class="reasons">${reasons.map(([k,v])=>`<div class="rchip"><div class="rv">${nfmt(v)}</div><div class="rl">${esc(vlabel(k))}</div><div class="rp">${share(v,a.alerts)}% of violations</div></div>`).join('')}</div>`:''}
       </div>
     </section>
+
     <section>
-      <div class="sectitle">What happened to the flagged vehicles</div>
-      <p class="subc" style="margin:-8px 0 16px">Of the <b>${nfmt(a.violations)}</b> violations surfaced, how enforcement resolved them. <b>Interception is the bottleneck</b> — detection works, acting on it at the roadside is the open lever.</p>
-      <div class="outcome">
-        <div class="card ocard"><div class="on" style="color:#15A66A"><span class="odot" style="background:#15A66A"></span>${nfmt(a.intercepted)}</div><div class="ol">Intercepted</div><div class="op">${share(a.intercepted,a.violations)}% of violations · acted on at the roadside</div></div>
-        <div class="card ocard"><div class="on" style="color:#FF4F01"><span class="odot" style="background:#FF4F01"></span>${nfmt(a.missed)}</div><div class="ol">Missed</div><div class="op">${share(a.missed,a.violations)}% of violations · flagged, drove on</div></div>
-        <div class="card ocard"><div class="on" style="color:#F59E0B"><span class="odot" style="background:#F59E0B"></span>${nfmt(a.open)}</div><div class="ol">Open / awaiting action</div><div class="op">${share(a.open,a.violations)}% of violations · not yet triaged</div></div>
-      </div>
-    </section>
-    <section>
-      <div class="charts">
-        <div class="row2">
-          <div class="card chartcard"><h3>Enforcement outcome</h3><p>How the ${nfmt(a.violations)} flagged vehicles were resolved.</p><div class="canvas-wrap"><canvas id="cOutcome"></canvas></div></div>
-          <div class="card chartcard"><h3>Why they were flagged</h3><p>Top violation types among detected vehicles.</p><div class="canvas-wrap tall"><canvas id="cVio"></canvas></div></div>
-        </div>
-      </div>
-    </section>
-    <section>
-      <div class="sectitle">Camera-by-camera</div>
-      <p class="subc" style="margin:-8px 0 16px">Each live ANPR camera's funnel for the <b>${esc(winName)}</b> window.</p>
-      <div class="card tablecard"><table>
-        <thead><tr><th>Camera</th><th>City</th><th>Scanned</th><th>Violations</th><th>Flag rate</th><th>Intercepted</th><th>Missed</th><th>Interception rate</th></tr></thead>
-        <tbody>${(fd.cameras||[]).map(camRow).join('')}</tbody>
-      </table></div>
-    </section>
-    <section>
-      <div class="sectitle">Live vision pipeline</div>
-      <p class="subc" style="margin:-8px 0 16px">The most recent processing window across all cameras — raw frames in, plates read out. The plate-read rate is the ANPR engine's live health check.</p>
-      <div class="card"><div class="vision">
-        <div class="vstep"><div class="vv">${nfmt(fd.vision&&fd.vision.framesFetched)}</div><div class="vl">Frames fetched</div></div>
-        <div class="vstep"><div class="vv">${nfmt(fd.vision&&fd.vision.vehiclesDetected)}</div><div class="vl">Vehicles detected</div></div>
-        <div class="vstep"><div class="vv">${nfmt(fd.vision&&fd.vision.platesRead)} <span style="font-size:14px;color:var(--muted);font-weight:700">· ${share(fd.vision&&fd.vision.platesRead,fd.vision&&fd.vision.framesFetched)}%</span></div><div class="vl">Plates read (read rate)</div></div>
+      <div class="charts"><div class="row2">
+        <div class="card chartcard"><h3>Enforcement outcome</h3><p>How the ${nfmt(a.alerts)} flagged vehicles resolved.</p><div class="canvas-wrap"><canvas id="cOutcome"></canvas></div></div>
+        <div class="card chartcard"><h3>Daily detections</h3><p>Violations surfaced per day · ${esc(winName).toLowerCase()}.</p><div class="canvas-wrap"><canvas id="cTrend"></canvas></div></div>
       </div></div>
-      <div class="fnote"><b>System-wide pending challan value flagged:</b> ${crfmt(fd.systemPendingChallanValue)} · Figures are as reported by the SATARK ANPR API. “Interception” and “Missed” reflect what officers have logged in the Vehicle Alert app, so the interception rate measures roadside follow-through, not detection accuracy. The live vision pipeline is a rolling recent-window counter (system-wide), not a cumulative total.</div>
+    </section>
+
+    <section>
+      <div class="sectitle">Vehicle &amp; document analysis</div>
+      <div class="charts"><div class="row2">
+        <div class="card chartcard"><h3>Vehicle class mix</h3><p>What kinds of vehicles were scanned.</p><div class="canvas-wrap tall"><canvas id="cClass"></canvas></div></div>
+        <div class="card chartcard"><h3>Document compliance</h3><p>${insTotal?'Insurance status of scanned vehicles, plus PUC.':'No document data in this window.'}</p>
+          ${insTotal?`<div class="canvas-wrap"><canvas id="cIns"></canvas></div>
+          <div class="complrow">
+            <div class="compl"><div class="cv" style="color:#15A66A">${nfmt(a.ins.valid)}</div><div class="cl">Insurance valid</div></div>
+            <div class="compl"><div class="cv" style="color:#FF4F01">${nfmt(a.ins.expired)}</div><div class="cl">Insurance expired</div></div>
+            <div class="compl"><div class="cv" style="color:#F59E0B">${nfmt(a.pucExpired)}</div><div class="cl">PUC expired</div></div>
+          </div>`:'<div class="in" style="color:var(--muted);font-size:13px;padding:8px 0">—</div>'}
+        </div>
+      </div></div>
+    </section>
+
+    ${offs.length?`<section>
+      <div class="sectitle">Top offence types</div>
+      <p class="subc" style="margin:-8px 0 16px">The specific offences behind the pending challans in this window.</p>
+      <div class="card chartcard"><div class="canvas-wrap tall"><canvas id="cOff"></canvas></div></div>
+    </section>`:''}
+
+    <section>
+      <div class="sectitle">Camera-by-camera · ${esc(winName)}</div>
+      <div class="card tablecard"><div class="tscroll"><table>
+        <thead><tr><th>Camera</th><th>City</th><th>Scanned</th><th>Violations</th><th>Flag rate</th><th>Intercepted</th><th>Missed</th><th>Interception</th></tr></thead>
+        <tbody>${(fd.cameras||[]).map(camRow).join('')}</tbody>
+      </table></div></div>
+      <div class="fnote">Live from the <b>SATARK ANPR system</b>. Vehicles scanned / violations / interception are per-camera; <b>pending challan value &amp; count are system-wide</b> (the API doesn't split them by camera). “Intercepted” vs “Missed” reflect what officers logged in the Vehicle Alert app — so interception rate measures roadside follow-through, not detection accuracy. Custom date ranges beyond these presets need a live query.</div>
     </section>`;
   buildFunnelCharts(a);
 }
 function camRow(c){
-  const w=(c.windows||{})[funnelWin]||{};
-  const flag=share(w.violations,w.scanned), act=(w.intercepted||0)+(w.missed||0), ir=act?Math.round((w.intercepted||0)/act*1000)/10:0;
+  const w=((fbData().data||{})[c.id]||{})[funnelWin]||{};
+  const flag=share(w.alerts,w.scans), act=(w.intercepted||0)+(w.missed||0), ir=act?Math.round((w.intercepted||0)/act*1000)/10:0;
   return `<tr><td class="city">${esc(c.name)}</td><td class="nowrap">${esc(c.city)}</td>
-    <td class="nowrap">${nfmt(w.scanned)}</td><td class="nowrap">${nfmt(w.violations)}</td>
+    <td class="nowrap">${nfmt(w.scans)}</td><td class="nowrap">${nfmt(w.alerts)}</td>
     <td class="nowrap"><span class="pill" style="background:#2B209822;color:#2B2098">${flag}%</span></td>
     <td class="nowrap">${nfmt(w.intercepted)}</td><td class="nowrap">${nfmt(w.missed)}</td>
     <td class="nowrap"><span class="pill" style="background:${ir>0?'#15A66A22;color:#15A66A':'#FF4F0122;color:#FF4F01'}">${ir}%</span></td></tr>`;
@@ -775,13 +820,33 @@ function buildFunnelCharts(a){
   destroyCharts();
   if(typeof Chart==='undefined')return;
   Chart.defaults.font.family="'Geist',sans-serif";Chart.defaults.color='#6B6B86';
+  const open=Math.max(0,a.alerts-a.intercepted-a.missed);
   charts.outcome=new Chart(document.getElementById('cOutcome'),{type:'doughnut',
-    data:{labels:['Intercepted','Missed','Open / awaiting'],datasets:[{data:[a.intercepted,a.missed,a.open],backgroundColor:['#15A66A','#FF4F01','#F59E0B'],borderColor:'#fff',borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,boxWidth:8,font:{size:12}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${nfmt(c.parsed)} (${share(c.parsed,a.violations)}%)`}}}}});
-  const ents=Object.entries(a.byType||{}).sort((x,y)=>y[1]-x[1]).slice(0,10);
-  charts.vio=new Chart(document.getElementById('cVio'),{type:'bar',
-    data:{labels:ents.map(e=>e[0]),datasets:[{label:'Vehicles',data:ents.map(e=>e[1]),backgroundColor:ents.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:22}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${nfmt(c.parsed.x)} vehicles`}}},scales:{x:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}},y:{grid:{display:false}}}}});
+    data:{labels:['Intercepted','Missed','Open / awaiting'],datasets:[{data:[a.intercepted,a.missed,open],backgroundColor:['#15A66A','#FF4F01','#F59E0B'],borderColor:'#fff',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${nfmt(c.parsed)} (${share(c.parsed,a.alerts)}%)`}}}}});
+  const tr=trendSeries();
+  if(document.getElementById('cTrend')&&tr.length){
+    charts.trend=new Chart(document.getElementById('cTrend'),{type:'line',
+      data:{labels:tr.map(p=>p.date.slice(5)),datasets:[{data:tr.map(p=>p.count),borderColor:'#4736FE',backgroundColor:'rgba(71,54,254,.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${nfmt(c.parsed.y)} detections`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}}}});
+  }
+  const vc=Object.entries(a.vClass||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,10);
+  if(document.getElementById('cClass')&&vc.length){
+    charts.cls=new Chart(document.getElementById('cClass'),{type:'bar',
+      data:{labels:vc.map(e=>prettyClass(e[0])),datasets:[{data:vc.map(e=>e[1]),backgroundColor:vc.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:22}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${nfmt(c.parsed.x)} vehicles`}}},scales:{x:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}},y:{grid:{display:false}}}}});
+  }
+  if(document.getElementById('cIns')&&(a.ins.valid+a.ins.expired)>0){
+    charts.ins=new Chart(document.getElementById('cIns'),{type:'doughnut',
+      data:{labels:['Valid','Expired'],datasets:[{data:[a.ins.valid,a.ins.expired],backgroundColor:['#15A66A','#FF4F01'],borderColor:'#fff',borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${nfmt(c.parsed)} (${share(c.parsed,a.ins.valid+a.ins.expired)}%)`}}}}});
+  }
+  const offs=Object.entries(a.offences||{}).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]).slice(0,7);
+  if(document.getElementById('cOff')&&offs.length){
+    charts.off=new Chart(document.getElementById('cOff'),{type:'bar',
+      data:{labels:offs.map(e=>e[0].length>44?e[0].slice(0,42)+'…':e[0]),datasets:[{data:offs.map(e=>e[1]),backgroundColor:offs.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:22}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>offs[c[0].dataIndex][0],label:c=>` ${nfmt(c.parsed.x)} challans`}}},scales:{x:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}},y:{grid:{display:false}}}}});
+  }
 }
 
 /* ===================== CHARTS ===================== */
