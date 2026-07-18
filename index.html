@@ -85,7 +85,8 @@
   .insights{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .insight{padding:16px 18px;display:flex;gap:12px;align-items:flex-start}
   .idot{width:11px;height:11px;border-radius:50%;flex:0 0 auto;margin-top:5px}
-  .insight .it{font-weight:700;font-size:14.5px;margin-bottom:2px;letter-spacing:-.01em}
+  .insight .it{font-weight:700;font-size:14.5px;margin-bottom:2px;letter-spacing:-.01em;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .insight .idate{font-size:11px;color:var(--muted);font-weight:600;flex:0 0 auto}
   .insight .in{font-size:13px;color:var(--muted)}
 
   /* table */
@@ -330,17 +331,17 @@ const TAB_META = {
   'Challan Billboard':{
     eyebrow:'🚦 Project Protect · Challan Billboards',
     title:'From one viral board to a nationwide road-safety network.',
-    sub:'ANPR billboards that surface a vehicle’s pending challans, insurance and PUC in seconds — donated to the traffic police and now rolling out across roughly 18 cities.',
+    sub:'ANPR billboards that surface a vehicle’s pending challans, insurance and PUC in seconds — donated to the traffic police and now rolling out across 20 cities.',
     heading:'Challan Billboards', noun:'billboard cities',
-    intro:'An <b>ANPR camera</b> reads plates and checks the VAHAN database to surface pending challans, insurance and PUC, then the board is <b>donated to the traffic police</b>. Bengaluru proved the format; Jaipur and Gurgaon are at the doorstep of launch, and roughly 18 cities sit in the pipeline. The pattern across cities is clear: <b>permissions and site finalisation eat the calendar; the tech goes live fast once cameras are up.</b>',
+    intro:'An <b>ANPR camera</b> reads plates and checks the VAHAN database to surface pending challans, insurance and PUC, then the board is <b>donated to the traffic police</b>. Bengaluru and Jaipur are live; Gurgaon is at the doorstep of launch, and 20 cities sit in the pipeline. The pattern across cities is clear: <b>permissions and site finalisation eat the calendar; the tech goes live fast once cameras are up.</b>',
     journeys:[
       {city:'Bengaluru (the original)', note:'Idea → live ≈ 31 days.',
        steps:[['Idea / channel','18 Aug 2025'],['17 days'],['First field test','4 Sep 2025'],['14 days'],['Live','~18 Sep 2025'],['6 days'],['Viral','24 Sep 2025']]},
       {city:'Jaipur', note:'MoU → live ≈ 75 days — permissions + camera install were the long pole, not the tech.',
        steps:[['DCP meeting / MoU','15 Mar 2026'],['73 days'],['API prod cutover','27 May 2026'],['2 days'],['Live (Rambagh)','29 May 2026'],['12 days'],['Inauguration','~10 Jun 2026']]}
     ],
-    context:[['6–7 s','detection → challan on screen'],['50–100 m','ANPR camera distance ahead'],['2–3','ANPR cameras per site'],['4–6 mo','typical campaign per board']],
-    contextNote:'Built to work where it matters: the board sits beside a <b>traffic signal</b> so halted vehicles get dwell time to read it, and ANPR cameras placed <b>50–100 m ahead</b> buy the <b>6–7 seconds</b> needed to read the plate, query VAHAN via the Cars24 API, and render pending challans, PUC &amp; insurance — all before the driver reaches the screen.',
+    context:[['2–3 s','detection → challan on screen'],['50–100 m','ANPR camera distance ahead'],['1','camera per site'],['45–60 days','typical campaign per board']],
+    contextNote:'Built to work where it matters: the board sits beside a <b>traffic signal</b> so halted vehicles get dwell time to read it, and ANPR cameras placed <b>50–100 m ahead</b> buy the <b>2–3 seconds</b> needed to read the plate, query VAHAN via the Cars24 API, and render pending challans, PUC &amp; insurance — all before the driver reaches the screen.',
     gallery:[
       {src:'img/billboard/bb1.jpg',cap:'Trinity Circle, Bengaluru — the board that started it all'},
       {src:'img/billboard/bb2.jpg',cap:'Real-time call-out: pending challans on the LED'},
@@ -357,9 +358,9 @@ const TAB_META = {
     title:'Safer roads, one board at a time.',
     sub:'Permanent road-safety signages installed with traffic police and municipal bodies under Better Drives, Better Lives — live in Gurgaon, expanding city by city.',
     heading:'Road Safety Signages', noun:'signage cities',
-    intro:'Permanent road-safety boards — No Parking, Stay-in-Lane and more — installed with traffic police and municipal bodies under <b>Better Drives, Better Lives</b>. <b>Gurgaon is live with 100 boards</b> and is the template; the open lever is branding space (capped by municipal logo rules), which the next round chases via a GMDA MoU. Everywhere else is early-stage permission work.',
-    context:[['100','boards live in Gurgaon'],['55 / 36','No-Parking / Stay-in-Lane'],['~10%','logo cap (MCG 0.2 sqm)'],['GMDA','MoU for the next round']],
-    contextNote:'Gurgaon is the proof point — <b>100 boards</b> installed with the traffic police and municipal corporation. The next round chases bigger branding space through a <b>GMDA MoU</b>; every other city is still in early permission work.',
+    intro:'Permanent road-safety boards — No Parking, Stay-in-Lane and more — installed with traffic police and municipal bodies under <b>Better Drives, Better Lives</b>. <b>Gurgaon is live with 100 boards</b> and is the template; every other city is early-stage permission work.',
+    context:[['100','boards live in Gurgaon'],['6','cities in the signage drive']],
+    contextNote:'Gurgaon is the proof point — <b>100 boards</b> installed with the traffic police and municipal corporation. Every other city is in early permission work.',
     journeys:[],
     gallery:[
       {src:'img/signage/rs1.png',cap:'‘No Parking’ board — Gurugram Police × Cars24, Jaipur Road, Sector 20'},
@@ -374,7 +375,7 @@ const TAB_META = {
     eyebrow:'🚦 Cars24 × CrashFree India',
     title:'One billboard in Bengaluru made traffic fines <em>impossible to ignore.</em>',
     sub:'An ANPR camera reads your number plate, checks the VAHAN database, and flashes your pending challans on a giant screen in seconds — no ad, no sales pitch. It went viral. Now it’s scaling across India as Project Protect.',
-    stats:[['10,838','vehicles scanned, day-one stretch'],['2.1M','views on a single reel'],['1.8K','posts — trended on X, organically'],['~18','cities now in the pipeline']]
+    stats:[['3L+','vehicles scanned to date'],['2.1M','views on a single reel'],['1.8K','posts — trended on X, organically'],['20','cities now in the pipeline']]
   },
   '__other__':{
     eyebrow:'🧭 Project Protect · New Asks',
@@ -527,7 +528,7 @@ function renderProgram(){
     <section>
       <div class="sectitle">City insights</div>
       <p class="subc" style="margin:-8px 0 16px">A one-line read on where every city stands — colour shows status, text is the latest note from the field.</p>
-      <div class="insights">${rows.length?rows.map(cityInsight).join(''):'<div class="card insight"><div class="in">No cities yet.</div></div>'}</div>
+      <div class="insights">${rows.length?rows.slice().sort((a,b)=>(parseDate(b.lastUpdate)||0)-(parseDate(a.lastUpdate)||0)).map(cityInsight).join(''):'<div class="card insight"><div class="in">No cities yet.</div></div>'}</div>
     </section>
     <section>
       <div class="sectitle">Rollout analytics</div>
@@ -569,7 +570,7 @@ function galleryItem(g){
   return `<figure class="gcard"><img loading="lazy" src="${src}" alt="${esc(g.cap)}" referrerpolicy="no-referrer" onerror="this.closest('.gcard').style.display='none'"><figcaption class="cap">${esc(g.cap)}</figcaption></figure>`;
 }
 
-function cityInsight(r){const st=statusOf(r),col=STATUS_COLOR[st];return `<div class="card insight"><span class="idot" style="background:${col}"></span><div><div class="it">${esc(r.city)}</div><div class="in">${esc(r.remark)||esc(r.phase)||'—'}</div></div></div>`;}
+function cityInsight(r){const st=statusOf(r),col=STATUS_COLOR[st],d=fmtDate(r.lastUpdate);return `<div class="card insight"><span class="idot" style="background:${col}"></span><div style="flex:1;min-width:0"><div class="it"><span>${esc(r.city)}</span><span class="idate">${d==='—'?'no date':'updated '+d}</span></div><div class="in">${esc(r.remark)||esc(r.phase)||'—'}</div></div></div>`;}
 function journeyCard(j){
   const inner=j.steps.map(s=>s.length===1?`<span class="jgap">— ${esc(s[0])} →</span>`:`<div class="jstep"><div class="t">${esc(s[0])}</div><div class="d">${esc(s[1])}</div></div>`).join('');
   return `<div class="card journeycard"><h3>${esc(j.city)}</h3><div class="journey">${inner}</div>${j.note?`<div class="jnote">${esc(j.note)}</div>`:''}</div>`;
@@ -628,6 +629,8 @@ function storyTimeline(){
   if(DOC.updates&&DOC.updates.length) return DOC.updates.map(u=>({ts:u.ts||u.timestamp||'',city:u.city||u.location||'—',program:u.program||'',field:u.field||'',value:u.value||u.newValue||'',evidence:u.evidence||'',source:u.source||u.channel||'',confidence:u.confidence})).sort((a,b)=>(parseDate(b.ts)||0)-(parseDate(a.ts)||0));
   return allRows().filter(r=>r.lastUpdate).map(r=>({ts:r.lastUpdate,city:r.city,program:r.program,field:'Current Phase',value:r.phase,evidence:r.remark||'',source:'tracker',confidence:null})).sort((a,b)=>(parseDate(b.ts)||0)-(parseDate(a.ts)||0));
 }
+/* Overall reach — both cities. Populated once Jaipur reach numbers are in; empty renders nothing. */
+const REACH_TABLE_HTML='';
 const PRESS=[
   {src:'Times of India',h:'Now, billboard in Bengaluru screams violations in real time',url:'https://timesofindia.indiatimes.com/city/bengaluru/now-billboard-in-bengaluru-screams-violations-in-real-time/articleshow/124096146.cms'},
   {src:'Hindustan Times',h:"Billboard at Bengaluru's Trinity Circle shows your traffic violations in real time",url:'https://www.hindustantimes.com/cities/bengaluru-news/aipowered-billboard-at-bengalurus-trinity-circle-shows-your-traffic-violations-in-real-time-report-101758722525792-amp.html'},
@@ -644,17 +647,14 @@ function renderStory(){
   const items=tl.map(u=>`<div class="card" style="padding:14px 18px;margin-bottom:10px"><div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap"><b style="font-size:14px">${esc(u.city)}</b>${u.program?`<span class="chip">${esc(u.program)}</span>`:''}<span style="font-size:12px;color:var(--muted)">${fmtDate(u.ts)}</span></div><div style="font-size:13.5px;margin-top:4px">${u.field?`<b>${esc(u.field)}</b> → `:''}${esc(u.value)||'update'}</div>${u.evidence?`<div style="font-size:12.5px;color:var(--muted);font-style:italic;margin-top:5px;border-left:2px solid var(--bluel);padding-left:10px">“${esc(u.evidence)}”</div>`:''}${u.source?`<div class="tlmeta">#${esc(u.source)}</div>`:''}</div>`).join('');
   document.getElementById('view').innerHTML=`
     <div class="storywrap">
-      <section><div class="grid2">
-        <div class="prose"><h2 class="sec2">Why a challan billboard?</h2>
+      <section>
+        <div class="prose" style="max-width:840px"><h2 class="sec2">Why a challan billboard?</h2>
           <p>India sits on a staggering pile of unpaid traffic fines — a challan crisis in the thousands of crores, with millions of violations going unaddressed every year. Fines feel abstract until they're personal.</p>
           <p>So in <b>September 2025</b>, under our road-safety initiative <b>CrashFree India</b> and with the <b>Bengaluru Traffic Police</b>, we put up an <b>ANPR-powered billboard</b> at <b>Trinity Circle (1MG Mall)</b>. An ANPR camera reads plates from ~100 metres, checks the VAHAN database, and within seconds the screen shows that vehicle's pending challans, insurance or PUC. Compliant drivers get a thumbs-up instead.</p>
-          <p>The deliberate choice that made it work: <b>we dropped the “Pay Now” call-to-action entirely.</b> No commercial hook — which is exactly why people shared it.</p></div>
-        <div class="card callout" style="padding:22px"><h3 style="font-size:15px;font-weight:800;margin-bottom:4px">The numbers behind the moment</h3>
-          <div class="numgrid"><div><div class="v">10,838</div><div class="cap">vehicles detected</div></div><div><div class="v">708</div><div class="cap">flagged with challans</div></div><div><div class="v">1,207</div><div class="cap">pending challans surfaced</div></div><div><div class="v">6.59%</div><div class="cap">hit rate</div></div></div>
-          <p class="cap" style="margin-top:14px">Picked up by national press and trended on X <b>before</b> any seeding from our side.</p></div>
-      </div>
+          <p>The deliberate choice that made it work: <b>we dropped the “Pay Now” call-to-action entirely.</b> No commercial hook — which is exactly why people shared it. It was picked up by national press and trended on X <b>before</b> any seeding from our side.</p></div>
       <div class="storystrip" style="margin-top:22px">${STORY_PHOTOS.map(galleryItem).join('')}</div>
       </section>
+      ${REACH_TABLE_HTML}
       <section><h2 class="sec2">How it works</h2><p class="subc" style="margin-bottom:18px">Four steps, start to finish in about ten seconds.</p>
         <div class="steps">
           <div class="step"><div class="ic">📷</div><div class="num">STEP 1</div><h4>Scan</h4><p>An ANPR camera reads plates of approaching vehicles, ~100m before the screen.</p></div>
@@ -670,15 +670,12 @@ function renderStory(){
           <div class="it"><div class="d">Aug 2025</div><div class="t">The idea takes shape</div><div class="x">Internal “Project Protect” channel created — a month before launch.</div></div>
           <div class="it"><div class="d">Sept 2025</div><div class="t">Bengaluru goes live &amp; viral</div><div class="x">Trinity Circle lights up; national press, X trends, 2.1M-view reel.</div></div>
           <div class="it"><div class="d">March 2026</div><div class="t">Project Protect formed</div><div class="x">Decision to scale; vendors, permissions and CSR funding lined up.</div></div>
-          <div class="it"><div class="d">May–Jun 2026</div><div class="t">City rollouts</div><div class="x">Jaipur &amp; Gurgaon near launch; ~18 cities in the pipeline.</div></div>
+          <div class="it"><div class="d">Jun 2026</div><div class="t">Jaipur goes live</div><div class="x">Rambagh Circle live &amp; viral; Gurgaon near launch; 20 cities in the pipeline.</div></div>
         </div></div>
       </div></section>
       <section><h2 class="sec2">Why Cars24 invests in CrashFree India</h2>
         <p class="subc" style="margin-bottom:18px">Our north star is “Better Drives, Better Lives.” CrashFree India puts that to work beyond our platform — tackling the human cost of unsafe roads in a country that loses ~1.8 lakh lives to crashes each year. The challan billboard is one expression; road-safety signages, pothole drives and enforcement tech are others.</p>
         <div class="press">${PRESS.map(p=>`<a class="pcard" href="${p.url}" target="_blank" rel="noopener"><div class="src">${esc(p.src)}</div><div class="h">${esc(p.h)}</div><div class="go">Read article →</div></a>`).join('')}</div></section>
-      <section><h2 class="sec2">Latest from the field</h2>
-        <p class="subc" style="margin-bottom:18px">${(DOC.updates&&DOC.updates.length)?'Live feed from the project Slack channels.':'Synthesised from the latest tracker update per city.'}</p>
-        ${items||'<div class="in" style="color:var(--muted)">No updates yet.</div>'}</section>
     </div>`;
 }
 
@@ -695,11 +692,12 @@ const prettyClass=s=>String(s).replace(/_/g,' ').replace(/([a-z])([A-Z])/g,'$1 $
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function monthLabel(s){const p=String(s).split('-');return (MON[+p[1]-1]||p[1])+' '+p[0];}
 
-/* ---- per-panel filter state (each chart/table filters independently) ---- */
+/* ---- shared filter state: changing Location/Window on any card syncs every card ---- */
 const PANEL={};
 function pstate(id){return PANEL[id]||(PANEL[id]={cam:'ALL',win:'30d'});}
-function psetCam(id,v){pstate(id).cam=v;renderPanel(id);}
-function psetWin(id,v){pstate(id).win=v;renderPanel(id);}
+function renderAllPanels(){FUNNEL_PANELS.forEach(id=>{if(document.getElementById('panel-'+id))renderPanel(id);});}
+function psetCam(id,v){FUNNEL_PANELS.forEach(p=>pstate(p).cam=v);renderAllPanels();}
+function psetWin(id,v){FUNNEL_PANELS.forEach(p=>pstate(p).win=v);renderAllPanels();}
 window.psetCam=psetCam;window.psetWin=psetWin;
 
 /* ---- parameterised aggregators (cam, win) ---- */
@@ -914,9 +912,11 @@ function buildCharts(rows,prog){
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.parsed.x}% · ${sorted[c.dataIndex].phase}`}}},scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#ECECF4'}},y:{grid:{display:false}}}}});
   const present=PHASE_ORDER.filter(ph=>rows.some(r=>r.phase===ph));
   rows.forEach(r=>{if(!present.includes(r.phase))present.push(r.phase);});
+  const DONUT_LABELS={id:'donutLabels',afterDatasetsDraw(ch){const g=ch.ctx,m=ch.getDatasetMeta(0);g.save();g.font='800 13px Geist';g.textAlign='center';g.textBaseline='middle';m.data.forEach((arc,i)=>{const v=ch.data.datasets[0].data[i];if(!v)return;const p=arc.getCenterPoint();g.fillStyle='rgba(0,0,0,.18)';g.fillText(v,p.x+0.6,p.y+0.6);g.fillStyle='#fff';g.fillText(v,p.x,p.y);});g.restore();}};
   charts.dist=new Chart(document.getElementById('cDist'),{type:'doughnut',
     data:{labels:present,datasets:[{data:present.map(ph=>rows.filter(r=>r.phase===ph).length),backgroundColor:present.map(phaseColor),borderColor:'#fff',borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyle:'circle',padding:11,boxWidth:8,font:{size:11}}}}}});
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyle:'circle',padding:11,boxWidth:8,font:{size:11}}}}},
+    plugins:[DONUT_LABELS]});
   const gc=gateCompletion(rows,prog);
   charts.gate=new Chart(document.getElementById('cGate'),{type:'bar',
     data:{labels:gc.map(g=>g.label),datasets:[{label:'% items done',data:gc.map(g=>g.pct),backgroundColor:gc.map((_,i)=>CYCLE[i%CYCLE.length]),borderRadius:5,borderSkipped:false,maxBarThickness:60}]},
