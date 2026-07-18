@@ -358,9 +358,9 @@ const TAB_META = {
     title:'Safer roads, one board at a time.',
     sub:'Permanent road-safety signages installed with traffic police and municipal bodies under Better Drives, Better Lives — live in Gurgaon, expanding city by city.',
     heading:'Road Safety Signages', noun:'signage cities',
-    intro:'Permanent road-safety boards — No Parking, Stay-in-Lane and more — installed with traffic police and municipal bodies under <b>Better Drives, Better Lives</b>. <b>Gurgaon is live with 100 boards</b> and is the template; every other city is early-stage permission work.',
-    context:[['100','boards live in Gurgaon'],['6','cities in the signage drive']],
-    contextNote:'Gurgaon is the proof point — <b>100 boards</b> installed with the traffic police and municipal corporation. Every other city is in early permission work.',
+    intro:'Permanent road-safety boards — No Parking, Stay-in-Lane and more — installed with traffic police and municipal bodies under <b>Better Drives, Better Lives</b>. <b>Gurgaon is live with 94 boards</b> and is the template; every other city is early-stage permission work.',
+    context:[['94','boards live in Gurgaon'],['55 / 36','No-Parking / Stay-in-Lane']],
+    contextNote:'Gurgaon is the proof point — <b>94 boards</b> installed with the traffic police and municipal corporation (9 more were removed by NHAI/MCG). Every other city is in early permission work.',
     journeys:[],
     gallery:[
       {src:'img/signage/rs1.png',cap:'‘No Parking’ board — Gurugram Police × Cars24, Jaipur Road, Sector 20'},
@@ -629,8 +629,24 @@ function storyTimeline(){
   if(DOC.updates&&DOC.updates.length) return DOC.updates.map(u=>({ts:u.ts||u.timestamp||'',city:u.city||u.location||'—',program:u.program||'',field:u.field||'',value:u.value||u.newValue||'',evidence:u.evidence||'',source:u.source||u.channel||'',confidence:u.confidence})).sort((a,b)=>(parseDate(b.ts)||0)-(parseDate(a.ts)||0));
   return allRows().filter(r=>r.lastUpdate).map(r=>({ts:r.lastUpdate,city:r.city,program:r.program,field:'Current Phase',value:r.phase,evidence:r.remark||'',source:'tracker',confidence:null})).sort((a,b)=>(parseDate(b.ts)||0)-(parseDate(a.ts)||0));
 }
-/* Overall reach — both cities. Populated once Jaipur reach numbers are in; empty renders nothing. */
-const REACH_TABLE_HTML='';
+/* Overall reach — both cities (numbers sourced from #project-protect / #marketing Slack). */
+const REACH_TABLE_HTML=`
+    <section>
+      <h2 class="sec2">The reach: Bengaluru sparked it, Jaipur exploded it</h2>
+      <p class="subc" style="margin-bottom:18px">Same idea, two cities — and Jaipur turned it into one of the year's biggest organic road-safety moments. This is reach, not challans.</p>
+      <div class="card tablecard"><div class="tscroll"><table class="cmp">
+        <thead><tr><th>Metric</th><th>Bengaluru</th><th>Jaipur</th></tr></thead>
+        <tbody>
+          <tr><td class="mlabel">Live since</td><td class="nowrap">Sep 2025</td><td class="nowrap">Jun 2026</td></tr>
+          <tr><td class="mlabel">Top reel views</td><td class="nowrap">2.1M+</td><td class="nowrap mcomb">18.3M+</td></tr>
+          <tr><td class="mlabel">Total reel views</td><td class="nowrap">2.1M+</td><td class="nowrap mcomb">35.5M+</td></tr>
+          <tr><td class="mlabel">Organic posts</td><td class="nowrap">1.8K</td><td class="nowrap">156+</td></tr>
+          <tr><td class="mlabel">Press &amp; media</td><td>ToI · HT · Times Now · Moneycontrol</td><td>Lalantop · The Better India · wide pickup</td></tr>
+          <tr><td class="mlabel">Time to viral</td><td class="nowrap">a few days</td><td class="nowrap mcomb">12 hours</td></tr>
+        </tbody>
+      </table></div></div>
+      <p class="subc" style="margin-top:14px"><b>Jaipur</b> went viral across India within 12 hours of launch — creators from Odisha, West Bengal and Bhopal made content around it, 156+ organic posts, and pickups from <b>Lalantop</b> and <b>The Better India</b>. The AI billboard and enforcement system are live and actively supporting Jaipur Traffic Police.</p>
+    </section>`;
 const PRESS=[
   {src:'Times of India',h:'Now, billboard in Bengaluru screams violations in real time',url:'https://timesofindia.indiatimes.com/city/bengaluru/now-billboard-in-bengaluru-screams-violations-in-real-time/articleshow/124096146.cms'},
   {src:'Hindustan Times',h:"Billboard at Bengaluru's Trinity Circle shows your traffic violations in real time",url:'https://www.hindustantimes.com/cities/bengaluru-news/aipowered-billboard-at-bengalurus-trinity-circle-shows-your-traffic-violations-in-real-time-report-101758722525792-amp.html'},
@@ -708,7 +724,7 @@ function aggFor(cam,win){
   sel.forEach(id=>{
     const x=((fd.data||{})[id]||{})[win]; if(!x) return;
     A.scans+=x.scans||0; A.alerts+=x.alerts||0; A.intercepted+=x.intercepted||0; A.missed+=x.missed||0; A.pucExpired+=x.pucExpired||0; A.challanPending+=x.challanPending||0;
-    A.pendingAmount+=x.pendingAmount||0; A.pendingCount+=x.pendingCount||0; A.paidCount+=x.paidCount||0;   // per-camera now → sum
+    A.paidCount+=x.paidCount||0;
     Object.entries(x.alertsByType||{}).forEach(([k,v])=>A.byType[k]=(A.byType[k]||0)+v);
     Object.entries(x.byStatus||{}).forEach(([k,v])=>A.byStatus[k]=(A.byStatus[k]||0)+v);
     (x.detectedMix||[]).forEach(b=>{const e=A.dmixM[b.bucket]||(A.dmixM[b.bucket]={bucket:b.bucket,detected:0,ingested:0});e.detected+=b.detected||0;e.ingested+=b.ingested||0;});
@@ -723,6 +739,12 @@ function aggFor(cam,win){
   A.byState=Object.keys(A.stateM).map(k=>({label:k,count:A.stateM[k]})).sort((a,b)=>b.count-a.count);
   A.repeatOffenders=Object.values(A.offM).sort((a,b)=>b.sightings-a.sightings).slice(0,10);
   A.detectedMix=Object.values(A.dmixM).map(b=>({bucket:b.bucket,detected:b.detected,ingested:b.ingested,readPct:b.detected?Math.round(b.ingested/b.detected*1000)/10:0})).sort((a,b)=>b.detected-a.detected);
+  // pending ₹/count: per-camera in current SATARK data (sum), but older data.json returns an identical system-wide value → don't double-count
+  const pAmt=sel.map(id=>(((fd.data||{})[id]||{})[win]||{}).pendingAmount||0).filter(v=>v>0);
+  const pCnt=sel.map(id=>(((fd.data||{})[id]||{})[win]||{}).pendingCount||0).filter(v=>v>0);
+  const allEq=arr=>arr.length>1&&arr.every(v=>v===arr[0]);
+  A.pendingAmount=allEq(pAmt)?pAmt[0]:pAmt.reduce((a,b)=>a+b,0);
+  A.pendingCount=allEq(pCnt)?pCnt[0]:pCnt.reduce((a,b)=>a+b,0);
   A.actioned=A.intercepted+A.missed;
   A.rate=A.actioned?Math.round(A.intercepted/A.actioned*1000)/10:0;
   A.flagRate=share(A.alerts,A.scans);
