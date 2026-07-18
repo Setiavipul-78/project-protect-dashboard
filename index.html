@@ -269,6 +269,9 @@
   .seg.sm{padding:2px}
   .seg.sm button{padding:5px 10px;font-size:11.5px}
   .chartcard .pfilters{margin-bottom:12px}
+  .srcbar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--muted);font-weight:600;padding:16px 0 0}
+  .srcbar a{color:var(--blue);text-decoration:none}
+  .srcbar a:hover{text-decoration:underline}
   .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .heatmap{display:inline-block;min-width:560px;padding-top:4px}
   .hmrow{display:flex;gap:3px;margin-bottom:3px;align-items:center}
@@ -460,6 +463,16 @@ function fillGates(programs){
 }
 function updateStatus(){document.getElementById('statusDot').classList.toggle('live',isLive);document.getElementById('statusText').textContent=isLive?'Live':'Snapshot';document.getElementById('synced').textContent='· '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
 
+const PP_SHEET_URL='https://docs.google.com/spreadsheets/d/1xWP7qiEIYX4VQPqE0-pqhN4IeETvMoqm6yNRAmd9YxM/edit';
+const SATARK_URL='http://162.55.219.9/';
+function srcBar(label,links){return `<div class="srcbar"><span>📄 ${esc(label)}</span>${links.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])} ↗</a>`).join('')}</div>`;}
+function sourceLinkFor(key){
+  if(key===STORY_KEY) return '';
+  if(key===FUNNEL_KEY) return srcBar('Source · SATARK ANPR platform (live) + monthly history sheet',[['SATARK platform',SATARK_URL],['History sheet',PP_SHEET_URL]]);
+  if(key===OTHER_KEY) return srcBar('Source · Project Protect Tracker',[['Other Initiatives tab',PP_SHEET_URL]]);
+  const p=programByKey(key), url=(p&&p.sheetUrl)||PP_SHEET_URL, nm=(TAB_META[key]&&TAB_META[key].heading)||'tracker';
+  return srcBar('Source · Project Protect Tracker',[[nm+' tab',url]]);
+}
 function renderTabs(){
   const tabs=DOC.programs.map(p=>({key:p.key,label:p.label||p.key}));
   tabs.push({key:FUNNEL_KEY,label:'Challan Funnel'});
@@ -482,6 +495,8 @@ function render(animate){
   else if(activeKey===OTHER_KEY) renderInitiatives();
   else if(activeKey===FUNNEL_KEY) renderFunnel();
   else renderProgram();
+  const src=sourceLinkFor(activeKey);
+  if(src) document.getElementById('view').insertAdjacentHTML('afterbegin',src);
   updateStatus();
   const view=document.getElementById('view');
   view.classList.remove('anim'); void view.offsetWidth;   // restart entrance animation
