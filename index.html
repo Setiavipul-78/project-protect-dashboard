@@ -272,6 +272,32 @@
   .srcbar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--muted);font-weight:600;padding:16px 0 0}
   .srcbar a{color:var(--blue);text-decoration:none}
   .srcbar a:hover{text-decoration:underline}
+  /* ---- compact Challan Funnel layout (denser, less scroll; data unchanged) ---- */
+  .funnelview section{padding:15px 0}
+  .funnelview section:first-child{padding-top:18px}
+  .funnelview .sectitle{margin-bottom:9px}
+  .funnelview .subc{margin:3px 0 10px;font-size:13px}
+  .funnelview .charts{gap:12px}
+  .funnelview .row2{gap:12px}
+  .funnelview .kpi{gap:10px}
+  .funnelview .kpi .card{padding:12px 15px}
+  .funnelview .kpi .value{font-size:23px;margin-top:3px}
+  .funnelview .kpi .meta{margin-top:2px}
+  .funnelview .chartcard{padding:14px 16px}
+  .funnelview .chartcard h3{font-size:14px}
+  .funnelview .chartcard p{margin-bottom:7px;font-size:12px}
+  .funnelview .canvas-wrap{height:225px}
+  .funnelview .canvas-wrap.tall{height:315px}
+  .funnelview .pfilters{margin-bottom:9px}
+  .funnelview .funnelcard{padding:15px 18px}
+  .funnelview .wstage{height:44px}
+  .funnelview .wstage b{font-size:17px}
+  .funnelview .wfunnel{gap:3px}
+  .funnelview .reasons{margin-top:13px;padding-top:13px;gap:9px}
+  .funnelview .rchip .rv{font-size:18px}
+  .funnelview .complrow{margin-top:10px;padding-top:10px}
+  .funnelview table.cmp th,.funnelview table.cmp td{padding:7px 11px}
+  .funnelview .fnote{margin-top:11px;padding:10px 13px}
   .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .heatmap{display:inline-block;min-width:560px;padding-top:4px}
   .hmrow{display:flex;gap:3px;margin-bottom:3px;align-items:center}
@@ -394,8 +420,7 @@ const TAB_META = {
   '__funnel__':{
     eyebrow:'📹 Project Protect · Live Enforcement Funnel',
     title:'Every vehicle, from <em>camera to challan.</em>',
-    sub:'Live from the SATARK ANPR system — how many vehicles each billboard camera scans, how many violations it surfaces, and what the enforcement outcome is. Detection is strong; interception is the open lever.',
-    stats:[['3,05,634','vehicles scanned · 2 cameras'],['88,135','violations surfaced live'],['₹30.09 Cr','pending challan value flagged'],['2','ANPR cameras live now']]
+    sub:'Live from the SATARK ANPR system — how many vehicles each billboard camera scans, how many violations it surfaces, and what the enforcement outcome is. Detection is strong; interception is the open lever.'
   }
 };
 
@@ -500,7 +525,8 @@ function render(animate){
   document.getElementById('bandTitle').innerHTML=meta.title;
   document.getElementById('bandSub').textContent=meta.sub;
   const bs=document.getElementById('bandStats');
-  if(meta.stats){bs.style.display='flex';bs.innerHTML=meta.stats.map(s=>`<div class="s"><div class="n">${esc(s[0])}</div><div class="l">${esc(s[1])}</div></div>`).join('');}
+  const bandStats=(activeKey===FUNNEL_KEY)?funnelBandStats():meta.stats;
+  if(bandStats&&bandStats.length){bs.style.display='flex';bs.innerHTML=bandStats.map(s=>`<div class="s"><div class="n">${esc(s[0])}</div><div class="l">${esc(s[1])}</div></div>`).join('');}
   else{bs.style.display='none';bs.innerHTML='';}
   if(activeKey===STORY_KEY) renderStory();
   else if(activeKey===OTHER_KEY) renderInitiatives();
@@ -510,6 +536,7 @@ function render(animate){
   if(src) document.getElementById('view').insertAdjacentHTML('afterbegin',src);
   updateStatus();
   const view=document.getElementById('view');
+  view.classList.toggle('funnelview', activeKey===FUNNEL_KEY);   // compact spacing for the dense funnel tab
   view.classList.remove('anim'); void view.offsetWidth;   // restart entrance animation
   if(animate!==false){ view.classList.add('anim'); if(activeKey!==FUNNEL_KEY) countUpValues(); }
 }
@@ -971,6 +998,17 @@ function renderPanel(id){
 }
 const FUNNEL_PANELS=['overview','journey','outcome','trend','detmix','compliance','offence','severity','sevtable','heatmap','month','compare'];
 
+/* live hero-banner stats for the funnel tab — recomputed from the feed on every refresh */
+function funnelBandStats(){
+  const fd=fbData(); if(!fd||!fd.data) return [];
+  const a=aggFor('ALL','all');
+  return [
+    [nfmt(a.scans),'vehicles scanned · all-time'],
+    [nfmt(a.alerts),'violations surfaced'],
+    [crfmt(a.pendingAmount),'challan dues pending'],
+    [String((fd.cameras||[]).length),'ANPR cameras live']
+  ];
+}
 function renderFunnel(){
   const fd=fbData();
   destroyCharts();
