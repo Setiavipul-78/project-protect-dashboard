@@ -340,9 +340,9 @@ const TAB_META = {
   'Challan Billboard':{
     eyebrow:'🚦 Project Protect · Challan Billboards',
     title:'From one viral board to a nationwide road-safety network.',
-    sub:'ANPR billboards that surface a vehicle’s pending challans, insurance and PUC in seconds — donated to the traffic police and now rolling out across 20 cities.',
+    sub:'ANPR billboards that surface a vehicle’s pending challans, insurance and PUC in seconds — donated to the traffic police and now rolling out across 18 cities.',
     heading:'Challan Billboards', noun:'billboard cities',
-    intro:'An <b>ANPR camera</b> reads plates and checks the VAHAN database to surface pending challans, insurance and PUC, then the board is <b>donated to the traffic police</b>. Bengaluru and Jaipur are live; Gurgaon is at the doorstep of launch, and 20 cities sit in the pipeline. The pattern across cities is clear: <b>permissions and site finalisation eat the calendar; the tech goes live fast once cameras are up.</b>',
+    intro:'An <b>ANPR camera</b> reads plates and checks the VAHAN database to surface pending challans, insurance and PUC, then the board is <b>donated to the traffic police</b>. Bengaluru and Jaipur are live; Gurgaon is at the doorstep of launch, and 18 cities sit in the pipeline. The pattern across cities is clear: <b>permissions and site finalisation eat the calendar; the tech goes live fast once cameras are up.</b>',
     journeys:[
       {city:'Bengaluru (the original)', note:'Idea → live ≈ 31 days.',
        steps:[['Idea / channel','18 Aug 2025'],['17 days'],['First field test','4 Sep 2025'],['14 days'],['Live','~18 Sep 2025'],['6 days'],['Viral','24 Sep 2025']]},
@@ -429,9 +429,20 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const phaseColor=ph=>PHASE_COLOR[ph]|| '#A4C2F4';
 
 /* ===================== DATA LOAD ===================== */
+/* merge duplicate city rows entered with different spellings (Bengaluru→Bangalore, Gurugram→Gurgaon…) */
+const CITY_ALIAS={gurugram:'Gurgaon',gurgram:'Gurgaon',ggn:'Gurgaon',bengaluru:'Bangalore',bangaluru:'Bangalore',blr:'Bangalore',bengalore:'Bangalore','new delhi':'Delhi','delhi ncr':'Delhi',ahemdabad:'Ahmedabad',amdavad:'Ahmedabad',bombay:'Mumbai',calcutta:'Kolkata',madras:'Chennai'};
+const canonCity=c=>CITY_ALIAS[String(c||'').toLowerCase().trim()]||String(c||'').trim();
+function dedupCities(rows){
+  const seen={},out=[];
+  (rows||[]).forEach(r=>{const key=canonCity(r.city).toLowerCase();if(!key)return;
+    const nr=Object.assign({},r,{city:canonCity(r.city)});
+    if(seen[key]===undefined){seen[key]=out.length;out.push(nr);}
+    else if(toPct(r.progress)>toPct(out[seen[key]].progress)){out[seen[key]]=nr;}});
+  return out;
+}
 function normalizeDoc(j){
   if(j&&Array.isArray(j.programs)&&j.programs.length&&Array.isArray(j.programs[0].rows))
-    return {programs:j.programs,updates:j.updates||[],initiatives:j.initiatives||[],generatedAt:j.generatedAt,funnel:j.funnel};
+    return {programs:j.programs.map(p=>Object.assign({},p,{rows:dedupCities(p.rows)})),updates:j.updates||[],initiatives:j.initiatives||[],generatedAt:j.generatedAt,funnel:j.funnel};
   if(j&&Array.isArray(j.headers)&&Array.isArray(j.rows)) return legacyToDoc(j);
   return null;
 }
@@ -705,7 +716,7 @@ function renderStory(){
           <div class="it"><div class="d">Aug 2025</div><div class="t">The idea takes shape</div><div class="x">Internal “Project Protect” channel created — a month before launch.</div></div>
           <div class="it"><div class="d">Sept 2025</div><div class="t">Bengaluru goes live &amp; viral</div><div class="x">Trinity Circle lights up; national press, X trends, 2.1M-view reel.</div></div>
           <div class="it"><div class="d">March 2026</div><div class="t">Project Protect formed</div><div class="x">Decision to scale; vendors, permissions and CSR funding lined up.</div></div>
-          <div class="it"><div class="d">Jun 2026</div><div class="t">Jaipur goes live</div><div class="x">Rambagh Circle live &amp; viral; Gurgaon near launch; 20 cities in the pipeline.</div></div>
+          <div class="it"><div class="d">Jun 2026</div><div class="t">Jaipur goes live</div><div class="x">Rambagh Circle live &amp; viral; Gurgaon near launch; 18 cities in the pipeline.</div></div>
         </div></div>
       </div></section>
       <section><h2 class="sec2">Why Cars24 invests in CrashFree India</h2>
