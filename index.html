@@ -930,7 +930,8 @@ PANEL_RENDER.month=function(el,st){
   charts.month=new Chart(cv,{type:'bar',data:{labels:mm.map(r=>monthLabel(r.month)),datasets:[{label:'Vehicles scanned',data:mm.map(r=>r.scans),backgroundColor:'#4736FE',borderRadius:5,borderSkipped:false,maxBarThickness:46},{label:'Violations detected',data:mm.map(r=>r.violations),backgroundColor:'#63C6A8',borderRadius:5,borderSkipped:false,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,font:{size:11.5}}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${nfmt(c.parsed.y)}`}}},scales:{x:{grid:{display:false}},y:{grid:{color:'#ECECF4'},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}}}});
 };
 PANEL_RENDER.compare=function(el,st){
-  el.innerHTML=`<div class="card chartcard" style="padding-bottom:10px">${panelFilters('compare',{cam:false})}<h3>Bangalore vs Jaipur</h3><p>Full funnel side by side · <b>Combined</b> = network total.</p><div class="tscroll">${comparisonTableFor(st.win)}</div></div>
+  const cmpTitle=(fbData().cameras||[]).map(c=>c.city).join(' vs ')||'Camera comparison';
+  el.innerHTML=`<div class="card chartcard" style="padding-bottom:10px">${panelFilters('compare',{cam:false})}<h3>${esc(cmpTitle)}</h3><p>Full funnel side by side · <b>Combined</b> = network total.</p><div class="tscroll">${comparisonTableFor(st.win)}</div></div>
     <div class="fnote">All metrics — including <b>pending challan dues &amp; count</b> — are now per-camera (SATARK update). “Intercepted / Missed / Expired” come from what officers logged in the Vehicle Alert app. Every card on this tab filters independently.</div>`;
 };
 function comparisonTableFor(win){
