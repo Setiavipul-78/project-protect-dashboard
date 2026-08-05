@@ -1,0 +1,32 @@
+name: Deploy to Cloudflare Pages
+
+# Auto-deploys the dashboard to project-protect-dashboard.pages.dev on every push
+# (Apps Script commits data.json here, which triggers this and refreshes the live site).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage site files (exclude repo tooling)
+        run: |
+          mkdir -p dist
+          cp index.html dist/ 2>/dev/null || true
+          cp data.json  dist/ 2>/dev/null || true
+          cp -r img      dist/ 2>/dev/null || true
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=project-protect-dashboard --branch=main --commit-dirty=true
